@@ -7,6 +7,7 @@ import { HiWorkshopKanban } from "@/components/kanban/HiWorkshopKanban";
 import { HiTechBoard } from "@/components/techboard/HiTechBoard";
 import { HiReceivingConsole } from "@/components/warehouse/HiReceivingConsole";
 import { HiProcurementPanel } from "@/components/procurement/HiProcurementPanel";
+import { HiQuarantineConsole } from "@/components/quarantine/HiQuarantineConsole";
 import {
   Car,
   Flame,
@@ -18,7 +19,8 @@ import {
   Barcode,
   ShoppingCart,
   Palette,
-  Printer
+  Printer,
+  ShieldAlert
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSector } from "@/lib/SectorContext";
@@ -33,7 +35,7 @@ const SECTOR_ICONS: Record<string, React.ElementType> = {
   Wrench,
 };
 
-type ActiveTab = "intake" | "kanban" | "techboard" | "receiving" | "procurement" | "showcase";
+type ActiveTab = "intake" | "kanban" | "techboard" | "receiving" | "procurement" | "quarantine" | "showcase";
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("intake");
@@ -78,6 +80,13 @@ export default function HomePage() {
       tag: "Modül 3",
     },
     {
+      id: "quarantine" as const,
+      label: "Karantina & Çakışma Yönetimi",
+      shortLabel: "Karantina",
+      icon: ShieldAlert,
+      tag: "Faz 3",
+    },
+    {
       id: "showcase" as const,
       label: "UI-Kit Vitrini",
       shortLabel: "Vitrin",
@@ -103,7 +112,7 @@ export default function HomePage() {
                   HiServis AI
                 </span>
                 <span className="hidden sm:inline-block text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                  FAZ 2 CANLI
+                  FAZ 3 CANLI
                 </span>
               </div>
 
@@ -189,6 +198,8 @@ export default function HomePage() {
         {activeTab === "receiving" && <HiReceivingConsole />}
 
         {activeTab === "procurement" && <HiProcurementPanel />}
+
+        {activeTab === "quarantine" && <HiQuarantineConsole />}
 
         {activeTab === "showcase" && <ComponentShowcase />}
       </main>

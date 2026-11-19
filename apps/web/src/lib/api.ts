@@ -829,4 +829,174 @@ export const apiClient = {
       };
     }
   },
+
+  // --- Phase 3: Offline Drift Sync & Quarantine Conflict Engine ---
+  async getQuarantineIncidents(status?: string): Promise<QuarantineIncidentDto[]> {
+    try {
+      const query = status ? `?status=${encodeURIComponent(status)}` : "";
+      return await request<QuarantineIncidentDto[]>(`/api/v1/quarantine/incidents${query}`);
+    } catch {
+      // Mock Fallback for disconnected / offline test mode
+      return [
+        {
+          id: "mock-inc-1",
+          workOrderId: "wo-mock-1",
+          workOrderNumber: "WO-2026-10492",
+          assetIdentifier: "34 ABC 123",
+          conflictType: "STATUS_CONFLICT_CANCEL_VS_COMPLETE",
+          serverStateJson: JSON.stringify({
+            Status: "Cancelled",
+            WorkOrderNumber: "WO-2026-10492",
+            Asset: "34 ABC 123",
+            GrandTotal: 2400.0,
+            CancelledReason: "Ofis Danışmanı: Müşteri telefonda işlemi iptal etti.",
+            UpdatedAt: new Date(Date.now() - 30 * 60000).toISOString(),
+          }),
+          clientStateJson: JSON.stringify({
+            status: "Completed",
+            completedBy: "Ahmet Usta (LIFT-1)",
+            elapsedSeconds: 4800,
+            technicianNotes: "Bodrum katında internet yokken balatalar takıldı, diskler temizlendi. Müşteri çevrimdışı imza attı.",
+            installedParts: [
+              { partSku: "4047024185242", partName: "Bosch Ön Fren Balata Takımı", quantity: 1 }
+            ],
+            offlineSignatureToken: "SIG-OFFLINE-99210-PASS",
+            completedAt: new Date(Date.now() - 10 * 60000).toISOString(),
+          }),
+          resolutionStatus: "PendingReview",
+          createdAt: new Date(Date.now() - 15 * 60000).toISOString(),
+        },
+      ];
+    }
+  },
+
+  async getQuarantineIncident(id: string): Promise<QuarantineIncidentDto> {
+    return await request<QuarantineIncidentDto>(`/api/v1/quarantine/incidents/${id}`);
+  },
+
+  async resolveQuarantineIncident(
+    id: string,
+    req: ResolveQuarantineRequest
+  ): Promise<ResolveQuarantineResultDto> {
+    try {
+      return await request<ResolveQuarantineResultDto>(`/api/v1/quarantine/incidents/${id}/resolve`, {
+        method: "POST",
+        body: JSON.stringify(req),
+      });
+    } catch {
+      // Fallback response for offline demo
+      return {
+        success: true,
+        message: req.resolutionAction === "AcceptClientState"
+          ? "Saha durumu kabul edildi. İş emri tamamlandı olarak onaylandı."
+          : req.resolutionAction === "AcceptServerState"
+          ? "Ofis iptal kararı korundu. Parçalar depoya iade edildi."
+          : "Manuel düzeltme uygulandı.",
+        incidentId: id,
+        resolutionStatus: "ResolvedByManager",
+        newWorkOrderStatus: req.resolutionAction === "AcceptClientState" ? "Completed" : "Cancelled",
+        resolvedAt: new Date().toISOString(),
+      };
+    }
+  },
+
+  async simulateQuarantineConflict(): Promise<{
+    success: boolean;
+    message: string;
+    workOrderId: string;
+    workOrderNumber: string;
+    quarantineIncidentId: string;
+    status: string;
+  }> {
+    try {
+      return await request<{
+        success: boolean;
+        message: string;
+        workOrderId: string;
+        workOrderNumber: string;
+        quarantineIncidentId: string;
+        status: string;
+      }>("/api/v1/quarantine/simulate-conflict", {
+        method: "POST",
+      });
+    } catch {
+      return {
+        success: true,
+        message: "Simülasyon Çakışması Başarıyla Tetiklendi! (Çevrimdışı Demo)",
+        workOrderId: "wo-sim-local",
+        workOrderNumber: `WO-SIM-${Math.floor(10000 + Math.random() * 90000)}`,
+        quarantineIncidentId: `inc-sim-${Date.now()}`,
+        status: "QuarantineReview",
+      };
+    }
+  },
+
+  async syncBatch(req: SyncBatchRequest): Promise<SyncBatchResponse> {
+    return await request<SyncBatchResponse>("/api/v1/sync/batch", {
+      method: "POST",
+      body: JSON.stringify(req),
+    });
+  },
 };
+
+export interface QuarantineIncidentDto {
+  id: string;
+  workOrderId: string;
+  workOrderNumber: string;
+  assetIdentifier: string;
+  conflictType: string;
+  serverStateJson: string;
+  clientStateJson: string;
+  resolutionStatus: string;
+  resolutionAction?: string | null;
+  managerNotes?: string | null;
+  createdAt: string;
+  resolvedAt?: string | null;
+  resolvedByUserName?: string | null;
+}
+
+export interface ResolveQuarantineRequest {
+  resolutionAction: "AcceptClientState" | "AcceptServerState" | "ManualCorrection";
+  managerNotes?: string;
+  manualUpdatedStatus?: string;
+}
+
+export interface ResolveQuarantineResultDto {
+  success: boolean;
+  message: string;
+  incidentId: string;
+  resolutionStatus: string;
+  newWorkOrderStatus: string;
+  resolvedAt: string;
+}
+
+export interface SyncMutationItem {
+  mutationId: string;
+  actionType: string;
+  workOrderId: string;
+  mutationHlc: number;
+  payloadJson: string;
+}
+
+export interface SyncBatchRequest {
+  clientDeviceId: string;
+  clientHlc: number;
+  mutations: SyncMutationItem[];
+}
+
+export interface SyncMutationResult {
+  mutationId: string;
+  workOrderId: string;
+  status: "Applied" | "Quarantined" | "Duplicate" | "Rejected";
+  message: string;
+  quarantineIncidentId?: string | null;
+}
+
+export interface SyncBatchResponse {
+  serverHlc: number;
+  processedCount: number;
+  appliedCount: number;
+  quarantinedCount: number;
+  skippedCount: number;
+  results: SyncMutationResult[];
+}

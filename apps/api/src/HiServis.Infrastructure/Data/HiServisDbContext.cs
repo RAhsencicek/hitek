@@ -28,6 +28,7 @@ public class HiServisDbContext : DbContext
     public DbSet<QuarantineIncident> QuarantineIncidents => Set<QuarantineIncident>();
     public DbSet<OutboxEvent> OutboxEvents => Set<OutboxEvent>();
     public DbSet<WorkshopBay> WorkshopBays => Set<WorkshopBay>();
+    public DbSet<ProcessedClientMutation> ProcessedClientMutations => Set<ProcessedClientMutation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -47,6 +48,7 @@ public class HiServisDbContext : DbContext
         modelBuilder.Entity<QuarantineIncident>().ToTable("quarantineincidents");
         modelBuilder.Entity<OutboxEvent>().ToTable("outboxevents");
         modelBuilder.Entity<WorkshopBay>().ToTable("workshopbays");
+        modelBuilder.Entity<ProcessedClientMutation>().ToTable("processedclientmutations");
 
         // Explicit column mappings for JSON and naming differences
         modelBuilder.Entity<Asset>()
@@ -68,6 +70,9 @@ public class HiServisDbContext : DbContext
             .Property(o => o.PayloadJson)
             .HasColumnName("payload")
             .HasColumnType("jsonb");
+
+        modelBuilder.Entity<ProcessedClientMutation>()
+            .HasKey(m => m.MutationId);
 
         modelBuilder.Entity<WorkOrder>()
             .Property(w => w.DamageMarkersJson)
@@ -175,6 +180,13 @@ public class HiServisDbContext : DbContext
             modelBuilder.Entity<WorkshopBay>().HasQueryFilter(b => 
                 _tenantContext.TenantId == null || 
                 (b.TenantId == _tenantContext.TenantId && (_tenantContext.IsTenantAdmin || _tenantContext.BranchId == null || b.BranchId == _tenantContext.BranchId))
+            );
+            modelBuilder.Entity<QuarantineIncident>().HasQueryFilter(q => 
+                _tenantContext.TenantId == null || 
+                (q.TenantId == _tenantContext.TenantId && (_tenantContext.IsTenantAdmin || _tenantContext.BranchId == null || q.BranchId == _tenantContext.BranchId))
+            );
+            modelBuilder.Entity<ProcessedClientMutation>().HasQueryFilter(m => 
+                _tenantContext.TenantId == null || m.TenantId == _tenantContext.TenantId
             );
         }
     }

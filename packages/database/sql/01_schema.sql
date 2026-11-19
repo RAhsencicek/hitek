@@ -189,6 +189,17 @@ CREATE TABLE IF NOT EXISTS QuarantineIncidents (
     CreatedAt TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
 );
 
+-- 5.1 PROCESSED CLIENT MUTATIONS (Idempotency & Mobile Sync)
+CREATE TABLE IF NOT EXISTS ProcessedClientMutations (
+    MutationId UUID PRIMARY KEY,
+    TenantId UUID NOT NULL REFERENCES Tenants(Id) ON DELETE RESTRICT,
+    ClientDeviceId VARCHAR(100) NOT NULL,
+    ActionType VARCHAR(50) NOT NULL,
+    WorkOrderId UUID NOT NULL,
+    Status VARCHAR(30) NOT NULL DEFAULT 'Applied',
+    ProcessedAt TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
+);
+
 -- 6. TRANSACTIONAL OUTBOX EVENTS
 CREATE TABLE IF NOT EXISTS OutboxEvents (
     Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

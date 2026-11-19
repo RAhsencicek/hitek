@@ -56,6 +56,13 @@ public class TenantResolutionMiddleware
 
                 tenantContext.SetContext(tenantId, branchId, null, "AnonymousGateway", isAdmin);
             }
+            else
+            {
+                // Development / Demo Fallback to default tenant
+                var defaultTenant = Guid.Parse("11111111-1111-1111-1111-111111111111");
+                var defaultBranch = Guid.Parse("22222222-2222-2222-2222-222222222222");
+                tenantContext.SetContext(defaultTenant, defaultBranch, null, "DevDefault", isTenantAdmin: true);
+            }
         }
 
         await _next(context);

@@ -392,3 +392,118 @@ public record VanStockTransferResultDto(
     DateTimeOffset TransferredAt
 );
 
+// --- Phase 3: Offline Sync & Quarantine DTOs ---
+
+public readonly record struct HlcTimestamp(long PhysicalTimeMs, int LogicalCounter, string NodeId = "") : IComparable<HlcTimestamp>
+{
+    public long ToPackedLong()
+    {
+        return (PhysicalTimeMs << 16) | ((long)LogicalCounter & 0xFFFF);
+    }
+
+    public static HlcTimestamp FromPackedLong(long packed, string nodeId = "")
+    {
+        var physical = packed >> 16;
+        var logical = (int)(packed & 0xFFFF);
+        return new HlcTimestamp(physical, logical, nodeId);
+    }
+
+    public static HlcTimestamp Now(string nodeId = "")
+    {
+        return new HlcTimestamp(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), 0, nodeId);
+    }
+
+    public HlcTimestamp Update(HlcTimestamp incoming, long currentPhysicalTimeMs, string? localNodeId = null)
+    {
+        var node = localNodeId ?? NodeId;
+        var maxPhysical = Math.Max(currentPhysicalTimeMs, Math.Max(PhysicalTimeMs, incoming.PhysicalTimeMs));
+
+        if (maxPhysical == PhysicalTimeMs && maxPhysical == incoming.PhysicalTimeMs)
+        {
+            return new HlcTimestamp(maxPhysical, Math.Max(LogicalCounter, incoming.LogicalCounter) + 1, node);
+        }
+        else if (maxPhysical == PhysicalTimeMs)
+        {
+            return new HlcTimestamp(maxPhysical, LogicalCounter + 1, node);
+        }
+        else if (maxPhysical == incoming.PhysicalTimeMs)
+        {
+            return new HlcTimestamp(maxPhysical, incoming.LogicalCounter + 1, node);
+        }
+        else
+        {
+            return new HlcTimestamp(maxPhysical, 0, node);
+        }
+    }
+
+    public int CompareTo(HlcTimestamp other)
+    {
+        var physicalCmp = PhysicalTimeMs.CompareTo(other.PhysicalTimeMs);
+        if (physicalCmp != 0) return physicalCmp;
+        return LogicalCounter.CompareTo(other.LogicalCounter);
+    }
+
+    public override string ToString() => $"{PhysicalTimeMs}:{LogicalCounter}:{NodeId}";
+}
+
+public record SyncBatchRequest(
+    string ClientDeviceId,
+    long ClientHlc,
+    List<SyncMutationItem> Mutations
+);
+
+public record SyncMutationItem(
+    Guid MutationId,
+    string ActionType, // "WorkOrderCompleted", "InstallPart", "UpdateMeter", "CustomerSign"
+    Guid WorkOrderId,
+    long MutationHlc,
+    string PayloadJson
+);
+
+public record SyncMutationResult(
+    Guid MutationId,
+    Guid WorkOrderId,
+    string Status, // "Applied", "Quarantined", "Duplicate", "Rejected"
+    string Message,
+    Guid? QuarantineIncidentId = null
+);
+
+public record SyncBatchResponse(
+    long ServerHlc,
+    List<SyncMutationResult> Results,
+    int AppliedCount,
+    int QuarantinedCount,
+    int SkippedCount
+);
+
+public record QuarantineIncidentDto(
+    Guid Id,
+    Guid WorkOrderId,
+    string WorkOrderNumber,
+    string AssetIdentifier,
+    string ConflictType,
+    string ServerStateJson,
+    string ClientStateJson,
+    string ResolutionStatus,
+    string? ResolutionAction,
+    string? ManagerNotes,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset? ResolvedAt = null,
+    string? ResolvedByUserName = null
+);
+
+public record ResolveQuarantineRequest(
+    string ResolutionAction, // "AcceptClientState", "AcceptServerState", "ManualCorrection"
+    string? ManagerNotes = null,
+    string? AdjustedDataJson = null
+);
+
+public record ResolveQuarantineResultDto(
+    bool Success,
+    string Message,
+    Guid IncidentId,
+    string ResolutionStatus,
+    string NewWorkOrderStatus,
+    DateTimeOffset ResolvedAt
+);
+

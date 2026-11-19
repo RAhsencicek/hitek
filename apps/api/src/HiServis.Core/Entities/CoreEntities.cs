@@ -247,3 +247,14 @@ public class OutboxEvent
     public string? ErrorMessage { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
+
+public class ProcessedClientMutation
+{
+    public Guid MutationId { get; set; }
+    public Guid TenantId { get; set; }
+    public string ClientDeviceId { get; set; } = string.Empty;
+    public string ActionType { get; set; } = string.Empty;
+    public Guid WorkOrderId { get; set; }
+    public string Status { get; set; } = "Applied";
+    public DateTimeOffset ProcessedAt { get; set; } = DateTimeOffset.UtcNow;
+}

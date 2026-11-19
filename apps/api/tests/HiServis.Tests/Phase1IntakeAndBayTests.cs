@@ -345,8 +345,23 @@ public class Phase1IntakeAndBayTests
 
         await using var db = CreateDbContext(context);
 
-        var wo = await db.WorkOrders.FirstOrDefaultAsync();
-        Assert.NotNull(wo);
+        var asset = await db.Assets.FirstOrDefaultAsync();
+        Assert.NotNull(asset);
+
+        var wo = new WorkOrder
+        {
+            TenantId = TenantId,
+            BranchId = MaslakBranchId,
+            AssetId = asset.Id,
+            WorkOrderNumber = $"WO-CYCLE-{Guid.NewGuid():N}",
+            CustomerName = "Cycle Test",
+            CustomerPhone = "0532 000 0000",
+            Status = WorkOrderStatus.Open,
+            IntakeMeter = 50000,
+            CustomerComplaint = "Test döngüsü"
+        };
+        db.WorkOrders.Add(wo);
+        await db.SaveChangesAsync();
 
         var statuses = new[] { WorkOrderStatus.InProgress, WorkOrderStatus.WaitingParts, WorkOrderStatus.Completed };
         foreach (var newStatus in statuses)

@@ -236,6 +236,13 @@ WITH CHECK (
     )
 );
 
+-- ProcessedClientMutations: Scoped to Tenant (Idempotency)
+DROP POLICY IF EXISTS rls_processedmutations_tenant_policy ON ProcessedClientMutations;
+CREATE POLICY rls_processedmutations_tenant_policy ON ProcessedClientMutations
+FOR ALL
+USING (TenantId = app_current_tenant_id())
+WITH CHECK (TenantId = app_current_tenant_id());
+
 -- OutboxEvents: Scoped to Tenant
 DROP POLICY IF EXISTS rls_outbox_tenant_policy ON OutboxEvents;
 CREATE POLICY rls_outbox_tenant_policy ON OutboxEvents

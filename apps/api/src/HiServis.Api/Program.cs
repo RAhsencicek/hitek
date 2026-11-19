@@ -20,7 +20,7 @@ builder.Services.AddSingleton<IEscPosLabelService, EscPosLabelService>();
 
 // 2. DbContext with PostgreSQL & RLS Interceptor
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Host=localhost;Port=5432;Database=hiservis_dev;Username=postgres;Password=postgres";
+    ?? "Host=localhost;Port=5432;Database=hiservis_test;Username=hiservis_app;Password=hiservis_pass";
 
 builder.Services.AddDbContext<HiServisDbContext>((sp, options) =>
 {
@@ -93,6 +93,8 @@ app.MapBayEndpoints();
 app.MapOcrEndpoints();
 app.MapPurchaseOrderEndpoints();
 app.MapWarehouseEndpoints();
+app.MapSyncEndpoints();
+app.MapQuarantineEndpoints();
 
 app.Run();
 
