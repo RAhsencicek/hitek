@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HiServis.Api/HiServis.Api.csproj" />
+    <Project Path="src/HiServis.Core/HiServis.Core.csproj" />
+    <Project Path="src/HiServis.Infrastructure/HiServis.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HiServis.Tests/HiServis.Tests.csproj" />
+  </Folder>
+</Solution>
