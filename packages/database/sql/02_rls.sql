@@ -55,6 +55,9 @@ ALTER TABLE PurchaseOrderLines FORCE ROW LEVEL SECURITY;
 ALTER TABLE WorkOrders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE WorkOrders FORCE ROW LEVEL SECURITY;
 
+ALTER TABLE WorkshopBays ENABLE ROW LEVEL SECURITY;
+ALTER TABLE WorkshopBays FORCE ROW LEVEL SECURITY;
+
 ALTER TABLE WorkOrderLines ENABLE ROW LEVEL SECURITY;
 ALTER TABLE WorkOrderLines FORCE ROW LEVEL SECURITY;
 
@@ -165,6 +168,25 @@ WITH CHECK (TenantId = app_current_tenant_id());
 -- WorkOrders: Core operational table with strict tenant & branch policy
 DROP POLICY IF EXISTS rls_workorders_isolation_policy ON WorkOrders;
 CREATE POLICY rls_workorders_isolation_policy ON WorkOrders
+FOR ALL
+USING (
+    TenantId = app_current_tenant_id()
+    AND (
+        app_is_tenant_admin()
+        OR BranchId = app_current_branch_id()
+    )
+)
+WITH CHECK (
+    TenantId = app_current_tenant_id()
+    AND (
+        app_is_tenant_admin()
+        OR BranchId = app_current_branch_id()
+    )
+);
+
+-- WorkshopBays: Scoped to Tenant & Branch
+DROP POLICY IF EXISTS rls_workshopbays_isolation_policy ON WorkshopBays;
+CREATE POLICY rls_workshopbays_isolation_policy ON WorkshopBays
 FOR ALL
 USING (
     TenantId = app_current_tenant_id()

@@ -12,6 +12,10 @@ DECLARE
     v_asset_passat UUID := '77777777-7777-7777-7777-777777777777';
     v_asset_megane UUID := '88888888-8888-8888-8888-888888888888';
     v_workorder_1 UUID := '99999999-9999-9999-9999-999999999999';
+    v_bay_lift1 UUID := 'aaaaaaaa-1111-1111-1111-111111111111';
+    v_bay_lift2 UUID := 'aaaaaaaa-2222-2222-2222-222222222222';
+    v_bay_lift3 UUID := 'aaaaaaaa-3333-3333-3333-333333333333';
+    v_bay_qc UUID := 'aaaaaaaa-4444-4444-4444-444444444444';
 BEGIN
     -- 1. Tenant
     INSERT INTO Tenants (Id, Name, TaxNumber, Subdomain, SubscriptionTier, SmsBalance, WhatsAppBalance)
@@ -44,8 +48,17 @@ BEGIN
         (v_asset_megane, v_tenant_id, '06 BCD 456', 'VF1RFB00858921045', 'Renault', 'Megane 1.5 dCi Icon', 2020, 89450, '{"color": "Beyaz", "transmission": "EDC"}')
     ON CONFLICT (Id) DO NOTHING;
 
-    -- 6. Work Order
-    INSERT INTO WorkOrders (Id, TenantId, BranchId, AssetId, WorkOrderNumber, CustomerName, CustomerPhone, TechnicianUserId, Status, IntakeMeter, CustomerComplaint, GrandTotal, HlcTimestamp)
+    -- 6. Workshop Bays
+    INSERT INTO WorkshopBays (Id, TenantId, BranchId, BayCode, Name, BayType, AssignedTechnicianId, IsActive)
+    VALUES
+        (v_bay_lift1, v_tenant_id, v_branch_maslak, 'LIFT-1', 'LİFT 1 (Mekanik / Ağır Bakım)', 'Mechanic', v_user_tech_ahmet, true),
+        (v_bay_lift2, v_tenant_id, v_branch_maslak, 'LIFT-2', 'LİFT 2 (Periyodik Hızlı Bakım)', 'PeriodicMaintenance', NULL, true),
+        (v_bay_lift3, v_tenant_id, v_branch_maslak, 'LIFT-3', 'LİFT 3 (Rot-Balans / Ön Takım)', 'WheelAlignment', NULL, true),
+        (v_bay_qc, v_tenant_id, v_branch_maslak, 'BAY-QC', 'Kalite Kontrol & Teslimat', 'QualityInspection', v_user_manager, true)
+    ON CONFLICT (Id) DO NOTHING;
+
+    -- 7. Work Order
+    INSERT INTO WorkOrders (Id, TenantId, BranchId, AssetId, WorkOrderNumber, CustomerName, CustomerPhone, TechnicianUserId, BayId, Priority, Status, IntakeMeter, CustomerComplaint, GrandTotal, HlcTimestamp)
     VALUES (
         v_workorder_1,
         v_tenant_id,
@@ -55,6 +68,8 @@ BEGIN
         'Mehmet Yılmaz',
         '0532 999 8877',
         v_user_tech_ahmet,
+        v_bay_lift1,
+        'Urgent',
         'InProgress',
         145200,
         'Ön takımdan kasislerde gıcırtı ve frene basınca titreme geliyor.',
@@ -63,7 +78,10 @@ BEGIN
     )
     ON CONFLICT (Id) DO NOTHING;
 
-    -- 7. Work Order Lines
+    -- Update Lift 1 CurrentWorkOrderId
+    UPDATE WorkshopBays SET CurrentWorkOrderId = v_workorder_1 WHERE Id = v_bay_lift1;
+
+    -- 8. Work Order Lines
     INSERT INTO WorkOrderLines (TenantId, WorkOrderId, LineType, Description, Quantity, UnitPrice, TotalAmount)
     VALUES
         (v_tenant_id, v_workorder_1, 'Part', 'Bosch Ön Fren Balata Takımı', 1.0, 1850.00, 1850.00),

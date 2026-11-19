@@ -14,6 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ITenantContext, TenantContext>();
 builder.Services.AddScoped<PostgreSqlRlsInterceptor>();
 builder.Services.AddScoped<IPinAuthService, PinAuthService>();
+builder.Services.AddSingleton<ITsbVehicleCatalogService, TsbVehicleCatalogService>();
+builder.Services.AddScoped<IRegistrationCardOcrService, RegistrationCardOcrService>();
 
 // 2. DbContext with PostgreSQL & RLS Interceptor
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -49,6 +51,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 builder.Services.AddOpenApi();
 
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -71,7 +79,7 @@ app.MapGet("/api/v1/health", (ITenantContext tenantContext) => Results.Ok(new
     tenantId = tenantContext.TenantId,
     branchId = tenantContext.BranchId,
     isTenantAdmin = tenantContext.IsTenantAdmin,
-    version = "1.1.0-faz0"
+    version = "1.1.0-faz1"
 }))
 .WithName("HealthCheck")
 .WithTags("System");
@@ -80,6 +88,8 @@ app.MapGet("/api/v1/health", (ITenantContext tenantContext) => Results.Ok(new
 app.MapAuthEndpoints();
 app.MapWorkOrderEndpoints();
 app.MapAssetEndpoints();
+app.MapBayEndpoints();
+app.MapOcrEndpoints();
 
 app.Run();
 

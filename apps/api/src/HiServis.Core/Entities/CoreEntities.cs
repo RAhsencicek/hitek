@@ -114,11 +114,39 @@ public class WorkOrder
     public string? ErpInvoiceNumber { get; set; }
     public long HlcTimestamp { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
+    public Guid? BayId { get; set; }
+    public WorkshopBay? Bay { get; set; }
+    public string Priority { get; set; } = "Normal"; // Normal, Urgent, Waiter, PartsArrived, Vip
+    public int TargetLaborMinutes { get; set; } = 120;
+    public DateTimeOffset? LaborStartedAt { get; set; }
+    public int LaborElapsedSeconds { get; set; } = 0;
+    public bool IsLaborRunning { get; set; } = false;
+    public string DamageMarkersJson { get; set; } = "[]";
+
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 
     public ICollection<WorkOrderLine> Lines { get; set; } = new List<WorkOrderLine>();
     public ICollection<WorkOrderPartRequest> PartRequests { get; set; } = new List<WorkOrderPartRequest>();
+}
+
+public class WorkshopBay
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid TenantId { get; set; }
+    public Tenant? Tenant { get; set; }
+    public Guid BranchId { get; set; }
+    public Branch? Branch { get; set; }
+
+    public string BayCode { get; set; } = string.Empty; // e.g. "LIFT-1"
+    public string Name { get; set; } = string.Empty;    // e.g. "LİFT 1 (Mekanik / Ağır Bakım)"
+    public string BayType { get; set; } = "Mechanic";  // Mechanic, PeriodicMaintenance, WheelAlignment, QualityInspection
+    public Guid? AssignedTechnicianId { get; set; }
+    public User? AssignedTechnician { get; set; }
+    public Guid? CurrentWorkOrderId { get; set; }
+    public WorkOrder? CurrentWorkOrder { get; set; }
+    public bool IsActive { get; set; } = true;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
 public class WorkOrderLine

@@ -96,7 +96,20 @@ CREATE TABLE IF NOT EXISTS PurchaseOrderLines (
     Status VARCHAR(30) NOT NULL DEFAULT 'Pending' -- Pending, PartiallyReceived, Received, Cancelled
 );
 
--- 4. WORK ORDERS & WORKSHOP DISPATCH
+-- 4. WORK ORDERS, WORKSHOP BAYS & DISPATCH
+CREATE TABLE IF NOT EXISTS WorkshopBays (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    TenantId UUID NOT NULL REFERENCES Tenants(Id) ON DELETE RESTRICT,
+    BranchId UUID NOT NULL REFERENCES Branches(Id) ON DELETE RESTRICT,
+    BayCode VARCHAR(50) NOT NULL, -- 'LIFT-1', 'LIFT-2', 'BAY-QC'
+    Name VARCHAR(100) NOT NULL,    -- 'LİFT 1 (Mekanik / Ağır Bakım)'
+    BayType VARCHAR(50) NOT NULL DEFAULT 'Mechanic',
+    AssignedTechnicianId UUID REFERENCES Users(Id),
+    CurrentWorkOrderId UUID, -- Forward reference to WorkOrders(Id)
+    IsActive BOOLEAN NOT NULL DEFAULT true,
+    CreatedAt TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
+);
+
 CREATE TABLE IF NOT EXISTS WorkOrders (
     Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     TenantId UUID NOT NULL REFERENCES Tenants(Id) ON DELETE RESTRICT,
@@ -106,10 +119,17 @@ CREATE TABLE IF NOT EXISTS WorkOrders (
     CustomerName VARCHAR(150) NOT NULL,
     CustomerPhone VARCHAR(25) NOT NULL,
     TechnicianUserId UUID REFERENCES Users(Id),
+    BayId UUID REFERENCES WorkshopBays(Id),
+    Priority VARCHAR(30) NOT NULL DEFAULT 'Normal', -- Normal, Urgent, Waiter, PartsArrived, Vip
     Status VARCHAR(30) NOT NULL DEFAULT 'Open', -- Open, InProgress, WaitingParts, CustomerApproval, Completed, Invoiced, Cancelled, QUARANTINE_REVIEW
     IntakeMeter INT NOT NULL, -- Giriş Kilometresi
     CustomerComplaint TEXT,
     InternalNotes TEXT,
+    DamageMarkersJson JSONB NOT NULL DEFAULT '[]'::jsonb,
+    TargetLaborMinutes INT NOT NULL DEFAULT 120,
+    LaborStartedAt TIMESTAMPTZ,
+    LaborElapsedSeconds INT NOT NULL DEFAULT 0,
+    IsLaborRunning BOOLEAN NOT NULL DEFAULT false,
     GrandTotal NUMERIC(15,2) NOT NULL DEFAULT 0.00,
     PaidAmount NUMERIC(15,2) NOT NULL DEFAULT 0.00,
     RemainingBalance NUMERIC(15,2) NOT NULL DEFAULT 0.00,

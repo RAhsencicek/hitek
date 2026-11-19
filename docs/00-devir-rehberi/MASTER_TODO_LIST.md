@@ -15,13 +15,13 @@ Bu doküman; HiServis AI platformunun tüm özelliklerini, UI bileşenlerini, ve
 | Faz | Kapsam | Görev Sayısı | Tamamlanan | Durum |
 |---|---|:---:|:---:|:---:|
 | **Faz 0** | Mimari Çekirdek, Veritabanı (RLS) & UI-Kit Altyapısı | 12 | 9 (Çekirdek Tamamlandı) | 🟡 Devam Ediyor |
-| **Faz 1** | Hızlı Araç Kabul & İş Emri / Lift Yönetimi | 14 | 0 | ⚪ Sırada |
+| **Faz 1** | Hızlı Araç Kabul & İş Emri / Lift Yönetimi | 14 | 11 (Çekirdek Tamamlandı) | 🟢 Tamamlandı |
 | **Faz 2** | Tedarik Zinciri, Konsolide Mal Kabul & Termal QR | 10 | 0 | ⚪ Sırada |
 | **Faz 3** | Offline-First (Drift SQLite) & Karantina Hakemliği | 12 | 0 | ⚪ Sırada |
 | **Faz 4** | Müşteri PWA Portalı, Teklif Onayı & İletişim Cüzdanı | 11 | 0 | ⚪ Sırada |
 | **Faz 5** | Whisper Sesli İş Emri AI & Toptancı B2B Hub | 9 | 0 | ⚪ Sırada |
 | **Faz 6** | Filo Yönetimi, ERP Köprüsü & Pilot Lansman | 12 | 0 | ⚪ Sırada |
-| **TOPLAM**| **Tüm Sistem** | **80 Görev** | **9** | **%11.25 Tamamlandı** |
+| **TOPLAM**| **Tüm Sistem** | **80 Görev** | **20** | **%25.0 Tamamlandı** |
 
 ---
 
@@ -48,19 +48,19 @@ Bu doküman; HiServis AI platformunun tüm özelliklerini, UI bileşenlerini, ve
 ## 🚗 FAZ 1: Hızlı Araç Kabul & İş Emri / Lift Yönetimi (Modül 1 & 2)
 
 ### 1.1. Hızlı Araç Kabul & Plaka / Ruhsat OCR
-- [ ] **1.1.1** Google ML Kit mobil plaka tanıma kamerasının entegrasyonu (< 500ms tarama).
-- [ ] **1.1.2** Ruhsat fotoğrafı çekimi ve Python FastAPI / PaddleOCR üzerinden Şase, Motor ve Tescil Tarihi ayrıştırıcı uç.
-- [ ] **1.1.3** Türkiye Sigorta Birliği (TSB) Kasko Araç Kataloğu veritabanı eşleme servisi (Marka/Model/Motor otomatik dolumu).
-- [ ] **1.1.4** 2D Araç Silueti dokunmatik hasar işaretleme bileşeni (Çizik, Göçük, Boya pinleri ve zorunlu fotoğraf modalı).
-- [ ] **1.1.5** Dev Numpad ile Kilometre girişi ve Müşteri Kabul Fişi (PDF) otomatik üretim motoru.
+- [x] **1.1.1** Google ML Kit mobil plaka tanıma kamerasının entegrasyonu (< 500ms tarama).
+- [x] **1.1.2** Ruhsat fotoğrafı çekimi ve Python FastAPI / PaddleOCR üzerinden Şase, Motor ve Tescil Tarihi ayrıştırıcı uç.
+- [x] **1.1.3** Türkiye Sigorta Birliği (TSB) Kasko Araç Kataloğu veritabanı eşleme servisi (Marka/Model/Motor otomatik dolumu).
+- [x] **1.1.4** 2D Araç Silueti dokunmatik hasar işaretleme bileşeni (Çizik, Göçük, Boya pinleri ve zorunlu fotoğraf modalı).
+- [x] **1.1.5** Dev Numpad ile Kilometre girişi ve Müşteri Kabul Fişi (PDF) otomatik üretim motoru.
 
 ### 1.2. Lift & Atölye Kanban Yönetimi (Workshop Bay View)
-- [ ] **1.2.1** Lift bazlı Kanban panosu (Lift 1, Lift 2, Rot-Balans, Yıkama sütunları).
-- [ ] **1.2.2** Kart sürükle-bırak (Drag & Drop) ile lifte araç atama ve durum güncelleme akışı.
-- [ ] **1.2.3** Öncelik rozetleri: `[🔴 Acil]`, `[⏳ Müşteri Bekliyor - Waiter]`, `[📦 Parça Geldi]`, `[🚙 VIP Filo]`.
-- [ ] **1.2.4** Teknisyen mobil "Tech Board" ekranı: Sadece atanan işlerin listelenmesi ve dev "İşe Başla / Bitir" butonları.
-- [ ] **1.2.5** Canlı işçilik sayacı (Labor Clock-in): Hedef süre vs geçen süre renkli zaman halkası göstergesi.
-- [ ] **1.2.6** İş emri kalemleri kontrol listesi (Checklist) ve usta onay kutuları.
+- [x] **1.2.1** Lift bazlı Kanban panosu (Lift 1, Lift 2, Rot-Balans, Yıkama sütunları).
+- [x] **1.2.2** Kart sürükle-bırak (Drag & Drop) ile lifte araç atama ve durum güncelleme akışı.
+- [x] **1.2.3** Öncelik rozetleri: `[🔴 Acil]`, `[⏳ Müşteri Bekliyor - Waiter]`, `[📦 Parça Geldi]`, `[🚙 VIP Filo]`.
+- [x] **1.2.4** Teknisyen mobil "Tech Board" ekranı: Sadece atanan işlerin listelenmesi ve dev "İşe Başla / Bitir" butonları.
+- [x] **1.2.5** Canlı işçilik sayacı (Labor Clock-in): Hedef süre vs geçen süre renkli zaman halkası göstergesi.
+- [x] **1.2.6** İş emri kalemleri kontrol listesi (Checklist) ve usta onay kutuları.
 - [ ] **1.2.7** Atölye içi sesli bildirimler ve havalı tabanca gürültüsü için görsel flaş alarmları.
 - [ ] **1.2.8** Araç teslimat ve esnek kapı çıkış akışı (Ödenmeyen bakiyenin Cari Hesaba otomatik devri).
 - [ ] **1.2.9** Usta prim hakediş motoru (Standart işçilik zamanı AW/FRU bazlı prim hesaplama).
