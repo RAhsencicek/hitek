@@ -165,14 +165,21 @@ export const HiTechBoard: React.FC = () => {
   const progressPercent = Math.min(100, Math.round((elapsedSeconds / targetSeconds) * 100));
 
   return (
-    <div className="max-w-md mx-auto bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col min-h-[760px]">
-      {/* Mobil Üst Çubuk (Status Bar) */}
-      <div className="bg-slate-900 text-white px-5 py-2.5 flex items-center justify-between text-xs select-none">
-        <div className="font-bold flex items-center gap-1.5">
-          <Wrench className="w-3.5 h-3.5 text-blue-400" />
-          <span>HiServis Tech</span>
+    <div className="max-w-md lg:max-w-5xl mx-auto bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col">
+      {/* Üst Teknisyen İstasyon Çubuğu */}
+      <div className="bg-slate-900 text-white px-5 py-3 flex items-center justify-between text-xs select-none">
+        <div className="font-bold flex items-center gap-2">
+          <Wrench className="w-4 h-4 text-blue-400" />
+          <span className="font-extrabold text-sm tracking-tight">HiServis Tech</span>
+          <span className="hidden sm:inline text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
+            Canlı İş İstasyonu Paneli
+          </span>
         </div>
         <div className="flex items-center gap-3 text-slate-300">
+          <div className="flex items-center gap-1.5 text-xs font-semibold">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="hidden sm:inline">İstasyon Çevrimiçi</span>
+          </div>
           <Wifi className="w-3.5 h-3.5" />
           <div className="flex items-center gap-1 font-mono text-[11px]">
             <Battery className="w-4 h-4 text-emerald-400" />
@@ -197,7 +204,10 @@ export const HiTechBoard: React.FC = () => {
         </span>
       </div>
 
-      <div className="p-5 space-y-4 flex-1 overflow-y-auto">
+      <div className="p-5 flex-1 overflow-y-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Sol Kolon (5 Kolon): Hedef, Araç & Canlı Sayaç */}
+          <div className="lg:col-span-5 space-y-4">
         {/* GÜNLÜK VERİMLİLİK HEDEFİ */}
         <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
           <div className="flex items-center justify-between text-xs">
@@ -297,7 +307,10 @@ export const HiTechBoard: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
 
+      {/* Sağ Kolon (Masaüstü 7 Kolon): İşlemler, Parçalar & Kanıtlar */}
+      <div className="lg:col-span-7 space-y-4">
         {/* YAPILACAK İŞLEMLER (CHECKLIST) */}
         <div className="space-y-2">
           <div className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-tight flex items-center justify-between">
@@ -508,8 +521,10 @@ export const HiTechBoard: React.FC = () => {
           </div>
         )}
       </div>
+    </div>
+  </div>
 
-      {/* SABİT ALT AKSİYON ÇUBUĞU (STICKY BAR - 72px) */}
+  {/* SABİT ALT AKSİYON ÇUBUĞU (STICKY BAR - 72px) */}
       <div className="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-3 h-[72px] grid grid-cols-3 gap-2 shrink-0">
         <button
           type="button"

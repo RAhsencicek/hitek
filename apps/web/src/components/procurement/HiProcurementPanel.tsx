@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { HiPlateBadge } from "@/components/ui/HiPlateBadge";
+import { HiAssetBadge } from "@/components/ui/HiAssetBadge";
 import { HiButton56 } from "@/components/ui/HiButton56";
 import {
   ShoppingCart,
@@ -245,7 +245,7 @@ export const HiProcurementPanel: React.FC = () => {
 
                     <div>
                       <div className="flex items-center gap-2">
-                        <HiPlateBadge plate={req.plate} size="sm" />
+                        <HiAssetBadge identifier={req.plate} size="sm" />
                         <span className="text-[11px] font-mono font-bold text-slate-500">
                           #{req.workOrderNumber}
                         </span>
@@ -372,7 +372,7 @@ export const HiProcurementPanel: React.FC = () => {
                           <div className="space-y-1">
                             <div className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                               <span>{line.partDescription}</span>
-                              {line.linkedPlate && <HiPlateBadge plate={line.linkedPlate} size="sm" />}
+                              {line.linkedPlate && <HiAssetBadge identifier={line.linkedPlate} size="sm" />}
                               {line.linkedWorkOrderNumber && (
                                 <span className="font-mono text-[10px] text-slate-400">
                                   #{line.linkedWorkOrderNumber}

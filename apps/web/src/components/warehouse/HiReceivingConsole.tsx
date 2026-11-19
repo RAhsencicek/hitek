@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { HiPlateBadge } from "@/components/ui/HiPlateBadge";
+import { HiAssetBadge } from "@/components/ui/HiAssetBadge";
 import { HiButton56 } from "@/components/ui/HiButton56";
 import { HiStatusBadge } from "@/components/ui/HiStatusBadge";
 import { HiSealedLabelModal } from "@/components/warehouse/HiSealedLabelModal";
@@ -236,7 +236,7 @@ export const HiReceivingConsole: React.FC = () => {
                       <span className="w-6 h-6 rounded-full bg-slate-900 text-white text-[11px] font-bold flex items-center justify-center">
                         #{index + 1}
                       </span>
-                      <HiPlateBadge plate={cand.plate} size="md" />
+                      <HiAssetBadge identifier={cand.plate} size="md" />
                       <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300">
                         #{cand.workOrderNumber}
                       </span>

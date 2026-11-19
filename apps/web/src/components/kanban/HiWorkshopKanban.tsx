@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { HiPlateBadge } from "@/components/ui/HiPlateBadge";
 import { HiAssetBadge } from "@/components/ui/HiAssetBadge";
 import { HiStatusBadge, HiWorkOrderStatus } from "@/components/ui/HiStatusBadge";
 import { useSector } from "@/lib/SectorContext";
@@ -227,7 +226,7 @@ export const HiWorkshopKanban: React.FC<HiWorkshopKanbanProps> = ({
             className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm self-start md:self-auto active:scale-95 transition-all"
           >
             <Plus className="w-4 h-4" />
-            <span>+ Hızlı Araç Kabul</span>
+            <span>{config.id === "automotive" ? "Hızlı Araç Kabul" : `Hızlı ${config.assetTypeName} Kabul`}</span>
           </button>
         )}
       </div>

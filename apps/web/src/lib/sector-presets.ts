@@ -34,6 +34,7 @@ export interface SectorConfig {
   iconName: "Car" | "Flame" | "Bike" | "Building2" | "Zap" | "Wrench";
   branchDefaultName: string;
   assetTypeName: string;
+  hasFuelGauge: boolean;
   primaryIdentifier: {
     label: string;
     placeholder: string;
@@ -69,6 +70,7 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
     iconName: "Car",
     branchDefaultName: "Maslak Atatürk Oto Sanayi Şubesi",
     assetTypeName: "Araç",
+    hasFuelGauge: true,
     primaryIdentifier: {
       label: "Araç Plakası (Türk Standart Plaka)",
       placeholder: "34 ABC 123",
@@ -147,6 +149,7 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
     iconName: "Flame",
     branchDefaultName: "Kadıköy Isıtma, Soğutma & Kombi Servis Merkezi",
     assetTypeName: "Cihaz / Ünite",
+    hasFuelGauge: false,
     primaryIdentifier: {
       label: "Cihaz / Tesisat Barkod No",
       placeholder: "KMB-2024-8910",
@@ -225,6 +228,7 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
     iconName: "Bike",
     branchDefaultName: "Beşiktaş E-Mobility & Motosiklet Bakım Merkezi",
     assetTypeName: "Araç / Scooter",
+    hasFuelGauge: true,
     primaryIdentifier: {
       label: "Plaka veya Şasi / Gövde No",
       placeholder: "34 MTO 99 / SC-8812",
@@ -303,6 +307,7 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
     iconName: "Building2",
     branchDefaultName: "Şişli Asansör Periyodik Bakım & Revizyon İstasyonu",
     assetTypeName: "Asansör Ünitesi",
+    hasFuelGauge: false,
     primaryIdentifier: {
       label: "Bakanlık Asansör Kimlik / UAVT No",
       placeholder: "AS-34-10492",
@@ -368,6 +373,7 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
     iconName: "Zap",
     branchDefaultName: "İkitelli Güç Sistemleri & Jeneratör Servis Merkezi",
     assetTypeName: "Jeneratör / Kompresör",
+    hasFuelGauge: true,
     primaryIdentifier: {
       label: "Şasi / Cihaz Seri Numarası",
       placeholder: "GEN-50KVA-7721",
@@ -433,6 +439,7 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
     iconName: "Wrench",
     branchDefaultName: "Merkez Teknik Servis & Onarım Atölyesi",
     assetTypeName: "Varlık / Cihaz",
+    hasFuelGauge: false,
     primaryIdentifier: {
       label: "Cihaz Seri No / Envanter Barkodu",
       placeholder: "SN-DEV-2026-001",

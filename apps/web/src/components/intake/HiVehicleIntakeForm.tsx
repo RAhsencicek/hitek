@@ -362,15 +362,15 @@ export const HiVehicleIntakeForm: React.FC = () => {
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
                 {config.primaryIdentifier.label}:
               </label>
-              <div className="flex items-center gap-2">
-                <div className="shrink-0">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <div className="shrink-0 self-start sm:self-auto">
                   <HiAssetBadge
                     identifier={plate}
                     badgeType={config.primaryIdentifier.badgeType}
                     size="hero"
                   />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 w-full">
                   <input
                     type="text"
                     value={plate}
@@ -563,44 +563,53 @@ export const HiVehicleIntakeForm: React.FC = () => {
                 <div className="pt-2 animate-in fade-in">
                   <HiNumpad
                     initialValue={meter}
-                    label="Dokunmatik Kilometre Girişi"
-                    unit="KM"
+                    label={sector === "automotive" ? "Dokunmatik Kilometre Girişi" : `Dokunmatik ${config.meter.label} Girişi`}
+                    unit={config.meter.unit}
                     onConfirm={(val) => {
                       setMeter(val);
                       setShowNumpad(false);
                     }}
+                    onCancel={() => setShowNumpad(false)}
                   />
                 </div>
               )}
             </div>
 
-            {/* Yakıt Seviyesi Seçici */}
-            <div className="space-y-2">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                <Fuel className="w-3.5 h-3.5 text-blue-600" />
-                <span>Depo Yakıt Seviyesi:</span>
-              </label>
-              <div className="grid grid-cols-4 gap-2">
-                {[0.25, 0.50, 0.75, 1.0].map((ratio) => (
-                  <button
-                    key={ratio}
-                    type="button"
-                    onClick={() => setFuelLevel(ratio)}
-                    className={cn(
-                      "py-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center justify-center gap-1",
-                      fuelLevel === ratio
-                        ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                        : "bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100"
-                    )}
-                  >
-                    <span>%{Math.round(ratio * 100)}</span>
-                    <span className="text-[10px] font-normal opacity-80">
-                      {ratio === 1.0 ? "Tam Dolu" : ratio === 0.5 ? "Yarım Depo" : ratio === 0.25 ? "Çeyrek" : "3/4 Dolu"}
-                    </span>
-                  </button>
-                ))}
+            {/* Yakıt / Enerji Seviyesi Seçici (Sadece Deposu Olan Sektörler İçin) */}
+            {config.hasFuelGauge && (
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  <Fuel className="w-3.5 h-3.5 text-blue-600" />
+                  <span>
+                    {sector === "automotive"
+                      ? "Depo Yakıt Seviyesi:"
+                      : sector === "micromobility"
+                      ? "Batarya Şarj Seviyesi:"
+                      : "Yakıt / Enerji Doluluk Oranı:"}
+                  </span>
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[0.25, 0.50, 0.75, 1.0].map((ratio) => (
+                    <button
+                      key={ratio}
+                      type="button"
+                      onClick={() => setFuelLevel(ratio)}
+                      className={cn(
+                        "py-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center justify-center gap-1",
+                        fuelLevel === ratio
+                          ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                          : "bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100"
+                      )}
+                    >
+                      <span>%{Math.round(ratio * 100)}</span>
+                      <span className="text-[10px] font-normal opacity-80">
+                        {ratio === 1.0 ? "Tam Dolu" : ratio === 0.5 ? "Yarım Depo" : ratio === 0.25 ? "Çeyrek" : "3/4 Dolu"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Müşteri Bilgileri */}
@@ -861,7 +870,7 @@ export const HiVehicleIntakeForm: React.FC = () => {
           fuelLevelRatio: fuelLevel,
           damageMarkers: damageMarkers,
           advisorName: "Hakan Danışman",
-          branchName: "Maslak Atatürk Oto Sanayi Şubesi",
+          branchName: config.branchDefaultName,
         }}
       />
     </div>

@@ -23,12 +23,16 @@ export const HiAssetBadge: React.FC<HiAssetBadgeProps> = ({
   className,
   ...props
 }) => {
-  if (badgeType === "plate") {
+  // If explicitly plate or identifier matches Turkish plate pattern, always render authentic HiPlateBadge
+  const isPlate = /^\d{2}\s?[A-Za-z]{1,3}\s?\d{2,4}$/.test((identifier || "").trim());
+
+  if (badgeType === "plate" || isPlate) {
     return <HiPlateBadge plate={identifier} size={size} className={className} {...props} />;
   }
 
-  const defaultPrefix = prefixTag || identifier.split("-")[0] || "ID";
-  const displayId = identifier || "SN-DEV-2026-001";
+  const cleanId = (identifier || "SN-DEV-2026-001").trim();
+  const defaultPrefix = prefixTag || (cleanId.includes("-") ? cleanId.split("-")[0] : "ID");
+  const displayId = cleanId;
 
   const sizeStyles = {
     sm: {

@@ -21,37 +21,43 @@ export default function HomePage() {
   const TABS = [
     {
       id: "intake" as const,
-      label: "Hızlı Araç Kabul",
+      label: config.id === "automotive" ? "Hızlı Araç Kabul" : `Hızlı ${config.assetTypeName} Kabul`,
+      shortLabel: "Kabul",
       icon: Car,
       tag: "Modül 1",
     },
     {
       id: "kanban" as const,
-      label: "Lift & Atölye Kanban",
+      label: config.id === "automotive" ? "Lift & Atölye Kanban" : "İstasyon & Saha Kanban",
+      shortLabel: "Kanban",
       icon: Kanban,
       tag: "Modül 2",
     },
     {
       id: "techboard" as const,
-      label: "Teknisyen Tech Board",
+      label: "Teknisyen Paneli",
+      shortLabel: "Teknisyen",
       icon: Wrench,
       tag: "Ekran 2",
     },
     {
       id: "receiving" as const,
       label: "Mal Kabul & Mühür",
+      shortLabel: "Mal Kabul",
       icon: Barcode,
       tag: "Modül 3",
     },
     {
       id: "procurement" as const,
       label: "Satınalma & Tedarik",
+      shortLabel: "Tedarik",
       icon: ShoppingCart,
       tag: "Modül 3",
     },
     {
       id: "showcase" as const,
       label: "UI-Kit Vitrini",
+      shortLabel: "Vitrin",
       icon: Palette,
       tag: "Faz 0",
     },
@@ -78,17 +84,20 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="hidden md:flex items-center gap-1.5 text-xs text-slate-500 font-semibold pl-3 border-l border-slate-200 dark:border-slate-800">
+            <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-500 font-semibold pl-3 border-l border-slate-200 dark:border-slate-800">
               <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
-              <span className="truncate max-w-[220px]">{config.branchDefaultName}</span>
+              <span className="hidden xl:inline font-medium text-slate-700 dark:text-slate-300">{config.branchDefaultName}</span>
+              <span className="xl:hidden truncate max-w-[160px] font-medium text-slate-700 dark:text-slate-300">
+                {config.branchDefaultName.split(" ")[0]} Şubesi
+              </span>
             </div>
           </div>
 
           {/* Sektör Seçici & Sekme Navigasyonu */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <HiSectorSwitcher />
 
-            <nav className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl">
+            <nav className="hidden sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl overflow-x-auto max-w-[calc(100vw-220px)] md:max-w-none">
               {TABS.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -99,15 +108,15 @@ export default function HomePage() {
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
                     className={cn(
-                      "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all select-none",
+                      "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all select-none whitespace-nowrap",
                       isActive
                         ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm"
                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
                     )}
                   >
                     <Icon className="w-3.5 h-3.5" />
-                    <span className="hidden lg:inline">{tab.label}</span>
-                    <span className="lg:hidden">{tab.label.split(" ")[0]}</span>
+                    <span className="hidden xl:inline">{tab.label}</span>
+                    <span className="xl:hidden">{tab.shortLabel}</span>
                   </button>
                 );
               })}
@@ -117,7 +126,7 @@ export default function HomePage() {
       </header>
 
       {/* Ana İçerik Alanı */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 sm:pb-8">
         {activeTab === "intake" && <HiVehicleIntakeForm />}
 
         {activeTab === "kanban" && (
@@ -139,6 +148,38 @@ export default function HomePage() {
 
         {activeTab === "showcase" && <ComponentShowcase />}
       </main>
+
+      {/* Mobil Alt Çubuk (Bottom Navigation Bar) */}
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 flex items-center justify-around py-2 px-1 shadow-lg">
+        {TABS.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "flex flex-col items-center gap-1 py-1 px-2 rounded-xl text-[11px] font-bold transition-all",
+                isActive
+                  ? "text-blue-600 dark:text-blue-400 font-extrabold"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900"
+              )}
+            >
+              <div
+                className={cn(
+                  "p-1.5 rounded-xl transition-all",
+                  isActive ? "bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400" : "bg-transparent"
+                )}
+              >
+                <Icon className="w-5 h-5" />
+              </div>
+              <span>{tab.shortLabel}</span>
+            </button>
+          );
+        })}
+      </nav>
     </div>
   );
 }
