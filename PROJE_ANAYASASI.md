@@ -1,23 +1,23 @@
-# HiServis AI — Proje Anayasası (Master Blueprint v1.1)
+# HiServis AI — Proje Anayasası (Master Blueprint v1.2)
 
-**Sürüm:** 1.1 (Production-Ready)  
-**Tarih:** 18 Kasım 2026  
+**Sürüm:** 1.2 (Multi-Industry Agnostic Architecture & Production-Ready)  
+**Tarih:** 19 Kasım 2026  
 **Roller:** Lead Architect & CPO (Kurucu Ortaklar)  
-**Hedef Sektör:** Bağımsız Özel Oto Servisleri & Filo Bakım Yönetimi (MVP)  
-**Teknoloji Yığını:** .NET 9 Web API + PostgreSQL 17 + Flutter (Drift SQLite) + Next.js 19 + Python 3.12 (LangGraph / FastAPI)
+**Hedef Sektör:** Genel Endüstriyel Servis & Saha Yönetimi (Oto Servis, Asansör & Yürüyen Merdiven, Jeneratör & Kompresör, İklimlendirme/HVAC, Endüstriyel Makine)  
+**Teknoloji Yığını:** .NET 10 Web API + PostgreSQL 18 + Flutter (Drift SQLite) + Next.js 15 + Python 3.12 (LangGraph / FastAPI)
 
 ---
 
 ## 1. YÖNETİCİ ÖZETİ VE ÇEKİRDEK İLKELER (CORE TENETS)
 
-HiServis AI; Türkiye pazarındaki statik formlu, internet kesildiğinde kilitlenen ve parçayı araca bağlayamayan eski nesil servis yazılımlarının (FieldCo vb.) yerine geliştirilen; **Offline-First**, **Kapalı Devre Parça İzlenebilirliği** ve **Pragmatik Yapay Zeka Otomasyonu** sunan yeni nesil bir B2B SaaS platformudur.
+HiServis AI; Türkiye ve küresel pazardaki statik formlu, internet kesildiğinde kilitlenen ve parçayı varlığa bağlayamayan eski nesil servis yazılımlarının (FieldCo vb.) yerine geliştirilen; **Offline-First**, **Kapalı Devre Parça İzlenebilirliği**, **Agnostik Çok Sektörlü Varlık Yönetimi** ve **Pragmatik Yapay Zeka Otomasyonu** sunan yeni nesil bir B2B SaaS platformudur.
 
 ### Kurucu Ortak İlkelerimiz (Anayasa Maddeleri)
-1. **Sıfır Sahipsiz Parça:** Sanayi sitesinde depoya giren her kutu, araç ve iş emri ile anında mühürlenir. Atölyede etiketsiz, sahipsiz kutu ve yanlış montaj barınamaz.
-2. **Sahada Sıfır Kesinti (Offline-First Guarantee):** Bodrum katında veya çekmeyen lifte teknisyen hiçbir engele takılmaz; yerel SQLite üzerinde iş emri açar, parça düşer, ses kaydeder ve imza alır.
+1. **Sıfır Sahipsiz Parça:** Sanayi sitesinde veya merkez depoda teslim alınan her koli ve yedek parça, ilgili varlık (araç, asansör, jeneratör, makine) ve iş emri ile anında mühürlenir. Atölyede ve sahada etiketsiz, sahipsiz kutu ve yanlış montaj barınamaz.
+2. **Sahada Sıfır Kesinti (Offline-First Guarantee):** Bodrum katındaki asansör kuyusunda, yer altı otoparkındaki lifte veya kırsaldaki jeneratör kabininde teknisyen hiçbir engele takılmaz; yerel SQLite üzerinde iş emri açar, parça düşer, ses kaydeder ve müşteri imzası alır.
 3. **Sessiz Karantina (Silent Quarantine over Silent Overwrite):** Çevrimdışı ve çevrimiçi durum çakışmalarında sistem asla "Son Yazılan Kazanır" körlüğüyle veriyi ezmez. Veri karantinaya alınır ve servis müdürünün onayına sunulur.
 4. **Birim Ekonomi Disiplini (Margin Protection):** WhatsApp Business API gibi döviz bazlı dış bağımlılıklar, Sihirli Link (PWA Web Takip) ve Cüzdan modeli ile korunur; yazılım sattıkça zarar etmez.
-5. **Önce Dikeyde Mükemmellik:** 16 sektöre birden vasat hizmet vermek yerine; ilk sürümde Türkiye Özel Oto Servis & Filo pazarında mutlak liderlik kurulacak, çekirdek motor esnek tutularak diğer dikeyler sonraki fazlarda açılacaktır.
+5. **Agnostik Endüstriyel Çekirdek & Çok Sektörlü Dinamik Şablon Motoru:** Veritabanı ve API seviyesinde hiçbir veri modeli tek bir sektöre (örn. sadece binek otomobile) kilitlenmez. Varlık (`Asset`), Birincil Kimlik (`primary_identifier`), İkincil Kimlik (`secondary_identifier`) ve Dinamik Nitelikler (`dynamic_attributes JSONB`) üzerine kurulu jenerik motor; Oto Servis, Asansör, Jeneratör, HVAC ve Fabrika Makinesi gibi tüm endüstriyel dikey sektörlerin kabul, metrik, form ve muayene ihtiyaçlarını tek bir kod tabanıyla karşılar. Otomotiv ilk pilot dikeyimizdir; platform tüm endüstriyel servis sahasına anında uyarlanabilir.
 
 ---
 
@@ -36,7 +36,21 @@ HiServis AI; Türkiye pazarındaki statik formlu, internet kesildiğinde kilitle
 
 ---
 
-### 2.2 Uçtan Uca Temel Kullanıcı Senaryoları (User Journeys)
+### 2.2 Çok Sektörlü Agnostik Varlık Matrisi (Multi-Industry Sector Matrix)
+
+HiServis AI çekirdek veri modeli, sektörden bağımsız olarak şu 5 dikey sektörel arketipi dinamik şablonlarla (Sector Presets) tam destekler:
+
+| Dikey Sektör | Birincil Kimlik (`PrimaryIdentifier`) | İkincil Kimlik (`SecondaryIdentifier`) | Sayaç / Metrik (`CurrentMeter` & Dynamic) | Muayene / Kontrol (DVI Formatı) | Örnek Parça / Mühür |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Oto Servis & Filo Bakım** | Araç Plakası (34 ABC 123) | Şase No (VIN) | Kilometre (km) | 2D Görsel Kaporta Hasar & Mekanik DVI | Bosch Fren Balatası, Yağ Filtresi |
+| **Asansör & Yürüyen Merdiven** | Bakanlık Kimlik / UAVT No | Seri No / Ruhsat No | Seyir Sayısı / Kat Adedi / Aylık Bakım | A-Tipi Muayene (Kırmızı/Sarı/Yeşil Etiket) | Halat Klemensi, Paraşüt Fren Bloğu |
+| **Jeneratör & Kompresör** | Şasi / Kabin Seri No | Motor / Alternatör No | Çalışma Saati (Hourmeter) & kWh | Akü Voltajı, Yağ Basıncı, Yük Testi | Marş Motoru, AVR Kartı, Mazot Filtresi |
+| **İklimlendirme (HVAC/VRF)** | Dış Ünite Seri No / Cihaz No | Mahalli Lokasyon Kodu | Basınç (Bar), Gaz Tipi (R410A/R32) | Gaz Kaçak Testi, Kompresör Çekiş Amperajı | Genleşme Valfi, Drenaj Pompası |
+| **Endüstriyel Fabrika & CNC** | Demirbaş / Hat No | Model / İmalat Seri No | Mil Çalışma Saati, Devir/Dakika | Titreşim Spektrumu, Eksen Kalibrasyonu | Vidalı Mil Rulmanı, Spindle Motoru |
+
+---
+
+### 2.3 Uçtan Uca Temel Kullanıcı Senaryoları (User Journeys)
 
 #### Senaryo A: 30 Saniyenin Altında Hızlı Araç Kabul
 ```
@@ -190,25 +204,25 @@ CREATE TABLE Warehouses (
     IsActive BOOLEAN NOT NULL DEFAULT true
 );
 
--- 2. SOYUTLANMIŞ SEKTÖR BAĞIMSIZ VARLIK (OTOMOTİV DERİNLİKLİ ASSET)
+-- 2. SOYUTLANMIŞ SEKTÖR BAĞIMSIZ VARLIK (MULTI-INDUSTRY ASSET)
 CREATE TABLE Assets (
     Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     TenantId UUID NOT NULL REFERENCES Tenants(Id),
-    PrimaryIdentifier VARCHAR(50) NOT NULL, -- Plaka: '34 ABC 123'
-    SecondaryIdentifier VARCHAR(50),      -- Şase / VIN: 'WVWZZZ3CZWE...'
-    AssetType VARCHAR(30) NOT NULL DEFAULT 'Automotive', -- Automotive, Machinery vb.
-    Brand VARCHAR(60) NOT NULL,           -- Volkswagen
-    Model VARCHAR(60) NOT NULL,           -- Passat 1.6 TDI
+    PrimaryIdentifier VARCHAR(50) NOT NULL, -- Plaka ('34 ABC 123') / Asansör Kimlik ('AS-0912') / Jeneratör Seri No ('GEN-8812')
+    SecondaryIdentifier VARCHAR(50),      -- Şase (VIN) / Motor Seri No / Ruhsat No
+    AssetType VARCHAR(30) NOT NULL DEFAULT 'Automotive', -- Automotive, Elevator, Generator, HVAC, IndustrialMachinery
+    Brand VARCHAR(60) NOT NULL,           -- Volkswagen, Otis, Aksa, Daikin, Mazak vb.
+    Model VARCHAR(60) NOT NULL,           -- Passat 1.6 TDI, Gen2 Premier, APD-50A vb.
     ModelYear INT,
     EngineCode VARCHAR(30),
-    TsbCode VARCHAR(30),                  -- Türkiye Sigorta Birliği Kasko Araç Kodu
-    CurrentMeter INT NOT NULL DEFAULT 0,  -- Güncel KM
+    TsbCode VARCHAR(30),                  -- Otomotiv için TSB Kasko Kodu / Sanayi için Tip Onay Kodu
+    CurrentMeter INT NOT NULL DEFAULT 0,  -- Otomobilde KM / Jeneratörde Çalışma Saati (Hours) / Asansörde Seyir Sayısı
     LastServiceDate TIMESTAMPTZ,
-    DynamicAttributes JSONB NOT NULL DEFAULT '{}'::jsonb, -- Kaporta hasar haritası, lastik ebatları vb.
+    DynamicAttributes JSONB NOT NULL DEFAULT '{}'::jsonb, -- Hasar haritası, kat sayısı, gaz tipi, basınç bar, kalibrasyon vb.
     CreatedAt TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
 );
-CREATE INDEX idx_assets_tenant_plate ON Assets (TenantId, PrimaryIdentifier);
-CREATE INDEX idx_assets_vin ON Assets (TenantId, SecondaryIdentifier);
+CREATE INDEX idx_assets_tenant_primary ON Assets (TenantId, PrimaryIdentifier);
+CREATE INDEX idx_assets_secondary ON Assets (TenantId, SecondaryIdentifier);
 
 -- 3. DÜZELTİLMİŞ SATINALMA VE İŞ EMRİ PARÇA TALEP İLİŞKİSİ (1:N & N:M)
 CREATE TABLE PurchaseOrders (

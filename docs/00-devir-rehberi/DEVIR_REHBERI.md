@@ -1,8 +1,8 @@
 # HiServis AI — Mühendis ve Ekip Devir Teslim Rehberi
 
 > **Durum:** Yaşayan Ana Devir Belgesi (Living Handover Hub)  
-> **Sürüm:** v1.1 (Production-Ready)  
-> **Son Güncelleme:** 18 Kasım 2026  
+> **Sürüm:** v1.2 (Multi-Industry Agnostic Architecture & Production-Ready)  
+> **Son Güncelleme:** 19 Kasım 2026  
 > **Sorumlu:** Kurucu Ortaklar (Lead Architect & CPO)  
 > **İlgili Referanslar:** [PROJE_ANAYASASI.md](../../PROJE_ANAYASASI.md) · [Dokümantasyon Bilgi Haritası](../README.md) · [Yol Haritası](DURUM_VE_YOL_HARITASI.md)
 
@@ -12,17 +12,18 @@ Bu rehber, HiServis AI platformunu devralacak, üzerinde mimari geliştirme yapa
 
 ## 1. Sistemin Özü ve Varlık Sebebi (What & Why)
 
-Türkiye genelinde 40.000'in üzerinde bağımsız özel oto servisi ve filo bakım atölyesi bulunmaktadır. Bu işletmelerin %80'i hâlâ kağıt defter, WhatsApp grupları veya 2000'li yıllardan kalma statik masaüstü yazılımlarla yönetilmektedir.
+Türkiye ve küresel pazarda bağımsız özel oto servisleri, asansör periyodik bakım firmaları, endüstriyel jeneratör & kompresör servisleri ve iklimlendirme/HVAC sağlayıcıları olmak üzere yüz binlerce teknik saha ve atölye operasyonu bulunmaktadır. Bu işletmelerin %80'i hâlâ kağıt defter, WhatsApp grupları veya 2000'li yıllardan kalma statik masaüstü yazılımlarla yönetilmektedir.
 
 Mevcut çözümlerin sahada patladığı 3 büyük kronik yara vardır:
-1. **İnternet Kesintisinde Kilitlenme:** Sanayi sitelerinin bodrum katlarında veya lifte GSM çekmediğinde bulut tabanlı yazılımlar çalışmaz; usta iş emrini açamaz veya parça düşemez.
-2. **Sahipsiz Parça ve Yanlış Montaj:** Parçacıdan gelen koliler depoya atılır; hangi parçanın hangi lifteki araca ait olduğu bilinemez. Ahmet Usta'nın aracı için gelen balata yanlışlıkla Mehmet Usta'nın liftindeki araca takılır.
-3. **Müşteri İletişim Maliyeti ve Güvensizlik:** Müşteri servise bıraktığı aracın durumunu bilemez; usta telefonda saatlerce laf anlatır. Gönderilen her WhatsApp mesajı ise işletmeye döviz maliyeti yükler.
+1. **İnternet Kesintisinde Kilitlenme:** Sanayi sitelerinin bodrum katlarında, bina altı asansör kuyularında veya kırsal jeneratör kabinlerinde GSM çekmediğinde bulut tabanlı yazılımlar çalışmaz; teknisyen iş emrini açamaz veya parça düşemez.
+2. **Sahipsiz Parça ve Yanlış Montaj:** Parçacıdan gelen koliler depoya atılır; hangi parçanın hangi lifteki araca veya hangi asansör ünitesine ait olduğu bilinemez. Ahmet Usta'nın aracı için gelen parça yanlışlıkla Mehmet Usta'nın liftindeki araca takılır.
+3. **Müşteri İletişim Maliyeti ve Güvensizlik:** Müşteri servise bıraktığı aracın/makinenin durumunu bilemez; usta telefonda saatlerce laf anlatır. Gönderilen her WhatsApp mesajı ise işletmeye döviz maliyeti yükler.
 
-**HiServis AI bu 3 sorunu kökten çözer:**
-* **Offline-First:** Flutter + Drift SQLite ile bodrumda sıfır gecikmeyle çalışır.
-* **Kapalı Devre Mühürlü Parça:** Toptancıdan gelen kutu, depoya girdiği saniye Şase + Plaka + İş Emri QR kodu ile termal yazıcıdan mühürlenir.
-* **Akıllı İletişim & PWA:** Araç kabulde atılan tek bir WhatsApp mesajıyla müşteri PWA ekranına yönlendirilir; tüm fotoğraf, teklif ve durum onayları ücretsiz web üzerinden yürütülür.
+**HiServis AI bu 3 sorunu agnostik endüstriyel çekirdeğiyle kökten çözer:**
+* **Agnostik Çok Sektörlü Varlık Yönetimi:** `Assets` tablosundaki `primary_identifier`, `secondary_identifier` ve `dynamic_attributes JSONB` ile oto servis (Plaka/Şase), asansör (Bakanlık UAVT/Kimlik No), jeneratör (Seri No/Hourmeter) ve fabrikaları sıfır kod değişikliğiyle destekler.
+* **Offline-First:** Flutter + Drift SQLite ile bodrumda ve asansör kuyusunda sıfır gecikmeyle çalışır.
+* **Kapalı Devre Mühürlü Parça:** Toptancıdan gelen kutu, depoya girdiği saniye Varlık Kimliği + İş Emri QR kodu ile termal yazıcıdan mühürlenir.
+* **Akıllı İletişim & PWA:** Kabulde atılan tek bir bildirimle müşteri PWA ekranına yönlendirilir; tüm fotoğraf, teklif ve durum onayları ücretsiz web üzerinden yürütülür.
 
 ---
 

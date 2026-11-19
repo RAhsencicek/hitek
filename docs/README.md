@@ -1,10 +1,10 @@
 # HiServis AI — Dokümantasyon Dizini ve Bilgi Haritası
 
 > **Durum:** Yaşayan Ana Belge (Living Document)  
-> **Sürüm:** v1.1 (Production-Ready)  
-> **Son Güncelleme:** 18 Kasım 2026  
+> **Sürüm:** v1.2 (Multi-Industry Agnostic Architecture & Production-Ready)  
+> **Son Güncelleme:** 19 Kasım 2026  
 > **Sorumlu:** Kurucu Ortaklar (Lead Architect & CPO)  
-> **Kapsam:** Bağımsız Özel Oto Servisleri & Filo Bakım Yönetimi (MVP)
+> **Kapsam:** Çok Sektörlü Genel Endüstriyel Servis & Saha Yönetimi (Oto Servis, Asansör, Jeneratör, HVAC, Fabrika Makinesi)
 
 Bu dizin; HiServis AI platformunun tüm mimari kararlarını, iş alanı şartnamelerini, çevrimdışı senkronizasyon ve karantina protokollerini, modüler API sözleşmelerini ve kabul testlerini kategorize edilmiş olarak barındırır.
 

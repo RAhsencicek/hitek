@@ -1,20 +1,32 @@
-# Modül 1: Hızlı Araç Kabul & Ruhsat / Plaka OCR Şartnamesi
+# Modül 1: Hızlı Varlık Kabulü & Sektörel Giriş Motoru (Multi-Industry Asset Intake)
 
 > **Modül Kodu:** MOD-01  
-> **Durum:** Canlı Şartname (Active Specification) · Sürüm: v1.1  
-> **Sorumlu:** Mobil Ekip (Flutter) & Backend Ekibi (.NET 9)  
+> **Durum:** Canlı Şartname (Active Specification) · Sürüm: v1.2  
+> **Sorumlu:** Mobil Ekip (Flutter), Frontend (Next.js) & Backend Ekibi (.NET 10)  
 > **İlgili Referanslar:** [PROJE_ANAYASASI.md](../../PROJE_ANAYASASI.md) · [Teknik Mimari](../01-mimari-ve-altyapi/TEKNIK_MIMARI.md) · [Kabul Hızı Testi](../04-test-ve-rehberler/ARAC_KABUL_HIZI_MANUEL_TEST.md)
 
 ---
 
 ## 1. Modülün Amacı ve Değer Önerisi
 
-Geleneksel oto servislerinde araç kabul süreci 5 ila 10 dakika sürer. Servis danışmanı ruhsattaki 17 haneli şase numarasını elle yazarken sıklıkla harf hatası yapar (`0` ile `O`, `1` ile `I` karışır), bu da daha sonra parçacıdan yanlış parça gelmesine yol açar.
+Geleneksel servis yazılımları ya yalnızca binek otomobillere göre kilitlenmiş ya da genel sanayiye hitap edemeyecek kadar hantal ve statik formlardan oluşur. Bir teknisyen veya servis danışmanı seri numarasını, şaseyi veya kimlik numarasını elle yazarken sıklıkla harf hatası yapar (`0` ile `O`, `1` ile `I` karışır), bu da parça tedariğinde ve sahada büyük maliyet yaratır.
 
-**Modül 1'in Vaadi:**
-* **Hedef Süre:** Bir aracın servise girişinden lifte sevk edilmesine kadar geçen süreyi **30 saniyenin altına** indirmek.
-* **Sıfır Yazım Hatası:** Şase (VIN) ve Motor numarasının Ruhsat OCR ile doğrudan tescil belgesinden çekilmesi.
-* **Tek Tıkla Araç Tanıma:** Türkiye Sigorta Birliği (TSB) Kasko Araç Kataloğu üzerinden Marka, Model, Motor Hacmi, Beygir Gücü ve Paket bilgisinin anında doldurulması.
+**Modül 1'in Değer Önerisi:**
+* **Hedef Süre:** Bir varlığın (araç, asansör, jeneratör vb.) servise veya bakım planına girişinden istasyona/lifte sevk edilmesine kadar geçen süreyi **30 saniyenin altına** indirmek.
+* **Sıfır Yazım Hatası:** Otomotivde Ruhsat/Plaka OCR; Asansörde Bakanlık Kimlik / Karekod taraması; Jeneratör ve makinelerde seri no barkod taraması.
+* **Agnostik Sektörel Esneklik:** Tek bir tıklama veya şube profili ile formların sektöre göre dinamik olarak şekillenmesi (Plaka $\leftrightarrow$ Bina/UAVT $\leftrightarrow$ Seri No; KM $\leftrightarrow$ Seyir/Kat $\leftrightarrow$ Çalışma Saati).
+
+---
+
+## 1.1 Sektörel Giriş Parametreleri Eşleşmesi
+
+| Sektör | Birincil Kimlik Alanı | İkincil Kimlik Alanı | Sayaç / Metrik | Muayene / DVI Formatı | Hızlı Giriş Yöntemi |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Oto Servis & Filo** | Plaka (`34 ABC 123`) | Şase / VIN | Kilometre (km) | 2D Kaporta Hasar & Mekanik DVI | Kamera Plaka & Ruhsat OCR |
+| **Asansör & Yürüyen Merdiven** | Bakanlık Kimlik / UAVT No | Seri No / Ruhsat No | Seyir Sayısı / Kat Adedi | A-Tipi Muayene (Kırmızı/Sarı/Yeşil) | Karekod / Barkod Okuma |
+| **Jeneratör & Kompresör** | Şasi Seri No | Motor / Alternatör No | Çalışma Saati (Hourmeter) | Akü / Yağ / Yük Testi | Seri No Barkod / QR |
+| **İklimlendirme (HVAC)** | Ünite Seri No | Lokasyon / Mahalli ID | Gaz Tipi & Basınç (Bar) | Gaz Kaçak & Elektrik Amperajı | Cihaz Etiketi OCR / Karekod |
+| **Endüstriyel Makine** | Demirbaş No | Model / İmalat Yılı | Mil Çalışma Saati / Devir | Titreşim & Kalibrasyon Kartı | Makine Plakası Barkod |
 
 ---
 

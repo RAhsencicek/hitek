@@ -45,25 +45,31 @@ Bu doküman; HiServis AI platformunun tüm özelliklerini, UI bileşenlerini, ve
 
 ---
 
-## 🚗 FAZ 1: Hızlı Araç Kabul & İş Emri / Lift Yönetimi (Modül 1 & 2)
+## 🚗 FAZ 1: Hızlı Varlık Kabul & Çok Sektörlü İş Emri / İstasyon Yönetimi (Modül 1 & 2)
 
-### 1.1. Hızlı Araç Kabul & Plaka / Ruhsat OCR
+### 1.1. Hızlı Varlık Kabul & Giriş Motoru
 - [x] **1.1.1** Google ML Kit mobil plaka tanıma kamerasının entegrasyonu (< 500ms tarama).
 - [x] **1.1.2** Ruhsat fotoğrafı çekimi ve Python FastAPI / PaddleOCR üzerinden Şase, Motor ve Tescil Tarihi ayrıştırıcı uç.
 - [x] **1.1.3** Türkiye Sigorta Birliği (TSB) Kasko Araç Kataloğu veritabanı eşleme servisi (Marka/Model/Motor otomatik dolumu).
 - [x] **1.1.4** 2D Araç Silueti dokunmatik hasar işaretleme bileşeni (Çizik, Göçük, Boya pinleri ve zorunlu fotoğraf modalı).
-- [x] **1.1.5** Dev Numpad ile Kilometre girişi ve Müşteri Kabul Fişi (PDF) otomatik üretim motoru.
+- [x] **1.1.5** Dev Numpad ile Kilometre/Sayaç girişi ve Müşteri Kabul Fişi otomatik üretim motoru.
 
-### 1.2. Lift & Atölye Kanban Yönetimi (Workshop Bay View)
-- [x] **1.2.1** Lift bazlı Kanban panosu (Lift 1, Lift 2, Rot-Balans, Yıkama sütunları).
-- [x] **1.2.2** Kart sürükle-bırak (Drag & Drop) ile lifte araç atama ve durum güncelleme akışı.
-- [x] **1.2.3** Öncelik rozetleri: `[🔴 Acil]`, `[⏳ Müşteri Bekliyor - Waiter]`, `[📦 Parça Geldi]`, `[🚙 VIP Filo]`.
+### 1.2. İstasyon & Atölye Kanban Yönetimi (Workshop Bay View)
+- [x] **1.2.1** İstasyon/Lift bazlı Kanban panosu (İstasyon 1, İstasyon 2, Diagnostik, Kalibrasyon sütunları).
+- [x] **1.2.2** Kart sürükle-bırak (Drag & Drop) ile istasyona varlık atama ve durum güncelleme akışı.
+- [x] **1.2.3** Öncelik rozetleri: `[🔴 Acil]`, `[⏳ Müşteri Bekliyor - Waiter]`, `[📦 Parça Geldi]`, `[🚙 VIP Filo / Kurumsal]`.
 - [x] **1.2.4** Teknisyen mobil "Tech Board" ekranı: Sadece atanan işlerin listelenmesi ve dev "İşe Başla / Bitir" butonları.
 - [x] **1.2.5** Canlı işçilik sayacı (Labor Clock-in): Hedef süre vs geçen süre renkli zaman halkası göstergesi.
 - [x] **1.2.6** İş emri kalemleri kontrol listesi (Checklist) ve usta onay kutuları.
-- [ ] **1.2.7** Atölye içi sesli bildirimler ve havalı tabanca gürültüsü için görsel flaş alarmları.
-- [ ] **1.2.8** Araç teslimat ve esnek kapı çıkış akışı (Ödenmeyen bakiyenin Cari Hesaba otomatik devri).
+- [ ] **1.2.7** Atölye içi sesli bildirimler ve havalı tabanca/makine gürültüsü için görsel flaş alarmları.
+- [ ] **1.2.8** Varlık teslimat ve esnek kapı çıkış akışı (Ödenmeyen bakiyenin Cari Hesaba otomatik devri).
 - [ ] **1.2.9** Usta prim hakediş motoru (Standart işçilik zamanı AW/FRU bazlı prim hesaplama).
+
+### 1.3. Çok Sektörlü Dinamik Şablon Motoru (Multi-Industry Sector Presets)
+- [x] **1.3.1** Sektörel Şablon Kataloğu (Oto Servis, Asansör & Yürüyen Merdiven, Jeneratör & Kompresör, HVAC, Fabrika Makinesi parametreleri).
+- [x] **1.3.2** Web Arayüzünde Dinamik Sektör Seçici (Sector Preset Switcher) ve yerelleştirilmiş terminoloji köprüsü.
+- [x] **1.3.3** Sektöre göre dinamik kimlik (`primary_identifier`, `secondary_identifier`) ve sayaç (`current_meter`, `dynamic_attributes`) arayüz haritalaması.
+- [x] **1.3.4** Backend `AssetEndpoints` çoklu sektör varlık kayıt ve arama uçlarının (`AssetType = 'Elevator' | 'Generator' | 'Automotive'`) doğrulanması.
 
 ---
 

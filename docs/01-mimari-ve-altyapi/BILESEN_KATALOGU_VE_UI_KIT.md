@@ -63,14 +63,20 @@ Sanayi sitesinde teknisyenin yağlı parmakları ve iş eldivenleri nedeniyle bu
 
 ---
 
-### 3.2. Türkiye Standart Plaka Rozeti (Plate Badge Component)
-Uygulamanın neresinde bir araç plakası geçiyorsa (iş emri, fatura, parça kartı, lift), istisnasız bu bileşen kullanılır:
+### 3.2. Türkiye Standart Plaka ve Varlık Kimlik Rozeti (Plate & Asset Badge Component)
+Uygulamanın neresinde bir varlık kimliği geçiyorsa (iş emri, fatura, parça kartı, lift/istasyon), sektöre uygun standart rozet kullanılır:
 
 ```text
+A. Otomotiv (TR Plaka Rozeti):
 ┌────┬────────────────────────┐
 │ TR │  34 ABC 123            │   [Mavi Sol Bant: #003399, Beyaz Zemin: #FFFFFF]
 └────┴────────────────────────┘   [Yazı: DIN 1451 / FE-Schrift benzeri 18px Bold Siyah]
                                   [Kenarlık: 1.5px Kömür Grisi #1E293B, Radius: 6px]
+
+B. Genel Sanayi / Asansör / Jeneratör (Endüstriyel Varlık Rozeti):
+┌─────┬───────────────────────┐
+│ AS  │  AS-2026-9901         │   [Mavi Sol Bant: #1E293B, Kırık Beyaz Zemin: #F8FAFC]
+└─────┴───────────────────────┘   [Yazı: JetBrains Mono / Inter 16px Bold Koyu Gri]
 ```
 
 ---
