@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { HiPlateBadge } from "@/components/ui/HiPlateBadge";
+import { HiAssetBadge } from "@/components/ui/HiAssetBadge";
 import { HiButton56 } from "@/components/ui/HiButton56";
+import { useSector } from "@/lib/SectorContext";
 import {
   Wrench,
   Play,
@@ -34,6 +36,7 @@ export interface ChecklistItem {
 }
 
 export const HiTechBoard: React.FC = () => {
+  const { sector, config } = useSector();
   // Labor Timer State: start with 1 hour 24 minutes 35 seconds (5075s) per wireframe!
   const [elapsedSeconds, setElapsedSeconds] = useState<number>(5075);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(true);
@@ -225,21 +228,27 @@ export const HiTechBoard: React.FC = () => {
           </div>
         </div>
 
-        {/* ŞU AN ÜZERİNDE ÇALIŞILAN ARAÇ KARTI */}
+        {/* ŞU AN ÜZERİNDE ÇALIŞILAN VARLIK KARTI */}
         <div className="rounded-2xl p-4 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-3">
           <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
-            ŞU AN ÜZERİNDE ÇALIŞILAN ARAÇ:
+            {sector === "automotive" ? "ŞU AN ÜZERİNDE ÇALIŞILAN ARAÇ:" : `ŞU AN ÜZERİNDE ÇALIŞILAN ${config.assetTypeName.toUpperCase()}:`}
           </div>
 
           <div className="flex items-center justify-between">
-            <HiPlateBadge plate="34 ABC 123" size="lg" />
+            {sector === "automotive" ? (
+              <HiPlateBadge plate="34 ABC 123" size="lg" />
+            ) : (
+              <HiAssetBadge identifier={config.demoSamples[0]?.primaryId || "AS-34-10492"} size="lg" />
+            )}
             <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300">
               #WO-10492
             </span>
           </div>
 
           <div className="text-sm font-bold text-slate-900 dark:text-slate-100">
-            Volkswagen Passat 1.6 TDI (2018)
+            {sector === "automotive"
+              ? "Volkswagen Passat 1.6 TDI (2018)"
+              : `${config.demoSamples[0]?.brand || "Otis"} ${config.demoSamples[0]?.model || "Gen2"} (${config.demoSamples[0]?.modelYear || 2021})`}
           </div>
 
           {/* AKTİF İŞÇİLİK SAYACI */}
@@ -405,9 +414,15 @@ export const HiTechBoard: React.FC = () => {
             </div>
 
             <div className="pt-1 text-xs text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-              <span>Tahsis Edilen Araç:</span>
-              <HiPlateBadge plate="34 ABC 123" size="sm" />
-              <span className="text-[11px] font-semibold text-slate-500">(Passat B8 - Lift 1 / Ahmet U.)</span>
+              <span>{sector === "automotive" ? "Tahsis Edilen Araç:" : `Tahsis Edilen ${config.assetTypeName}:`}</span>
+              {sector === "automotive" ? (
+                <HiPlateBadge plate="34 ABC 123" size="sm" />
+              ) : (
+                <HiAssetBadge identifier={config.demoSamples[0]?.primaryId || "AS-34-10492"} size="sm" />
+              )}
+              <span className="text-[11px] font-semibold text-slate-500">
+                ({sector === "automotive" ? "Passat B8 - Lift 1 / Ahmet U." : `${config.demoSamples[0]?.brand || "Otis"} - İstasyon 1 / Ahmet U.`})
+              </span>
             </div>
 
             {/* Doğrulama Durum Rozeti */}

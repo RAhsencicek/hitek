@@ -182,32 +182,60 @@ export const HiVehicleIntakeForm: React.FC = () => {
     }
   };
 
-  // Simulate Camera Plate Scanning (< 300ms)
+  // Sektöre Göre Hızlı Kamera / Barkod / QR Tarama Simülasyonu (< 300ms)
   const handleScanPlateCamera = () => {
     setIsScanningPlate(true);
     setTimeout(() => {
-      setPlate("34 ABC 123");
-      handleSelectPreset("34 ABC 123");
+      if (sector === "automotive") {
+        setPlate("34 ABC 123");
+        handleSelectPreset("34 ABC 123");
+      } else if (config.demoSamples.length > 0) {
+        const sample = config.demoSamples[0];
+        setPlate(sample.primaryId);
+        setVin(sample.secondaryId);
+        setBrand(sample.brand);
+        setModel(sample.model);
+        setModelYear(sample.modelYear);
+        setMeter(sample.meter);
+        setCustomerName(sample.customerName);
+        setCustomerPhone(sample.customerPhone);
+        setComplaint(sample.complaint);
+        setIsRecognized(true);
+      }
       setIsScanningPlate(false);
+      setOcrSuccessMsg(config.scanActions?.cameraSuccessMsg || "Kamera taraması tamamlandı");
     }, 280);
   };
 
-  // Simulate Ruhsat OCR + TSB Vehicle Catalog Autofill
+  // Sektöre Göre Resmi Katalog / Ruhsat / Künye OCR Eşleştirme Simülasyonu
   const handleRuhsatOcrSimulation = () => {
     setIsProcessingOcr(true);
     setTimeout(() => {
-      setPlate("35 CDE 789");
-      setVin("NMTEB3BE30R109823");
-      setBrand("Toyota");
-      setModel("Corolla 1.8 Hybrid Dream e-CVT");
-      setModelYear(2022);
-      setTsbCode("2081190");
-      setMeter(42100);
-      setCustomerName("Burak Kaya");
-      setCustomerPhone("0535 777 8899");
+      const rec = config.sampleRecognition;
+      if (rec) {
+        setPlate(rec.primaryId);
+        setVin(rec.secondaryId);
+        setBrand(rec.brand);
+        setModel(rec.model);
+        setModelYear(rec.modelYear);
+        setTsbCode(rec.technicalCode);
+        setMeter(rec.meter);
+        setCustomerName(rec.customerName);
+        setCustomerPhone(rec.customerPhone);
+      } else {
+        setPlate("35 CDE 789");
+        setVin("NMTEB3BE30R109823");
+        setBrand("Toyota");
+        setModel("Corolla 1.8 Hybrid Dream e-CVT");
+        setModelYear(2022);
+        setTsbCode("2081190");
+        setMeter(42100);
+        setCustomerName("Burak Kaya");
+        setCustomerPhone("0535 777 8899");
+      }
       setIsRecognized(true);
       setIsProcessingOcr(false);
-      setOcrSuccessMsg("Ruhsat OCR & TSB Kasko Kataloğu eşleşti: Toyota Corolla 1.8 Hybrid Dream (%98 Güven)");
+      setOcrSuccessMsg(config.scanActions?.catalogSuccessMsg || "Katalog eşleşmesi tamamlandı");
     }, 450);
   };
 
@@ -388,7 +416,7 @@ export const HiVehicleIntakeForm: React.FC = () => {
               </div>
             </div>
 
-            {/* Kamera & Ruhsat Aksiyon Butonları */}
+            {/* Kamera & Ruhsat / Künye Aksiyon Butonları */}
             <div className="md:col-span-6 flex flex-wrap gap-2">
               <button
                 type="button"
@@ -397,7 +425,11 @@ export const HiVehicleIntakeForm: React.FC = () => {
                 className="flex-1 min-h-[52px] px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700 transition-all active:scale-95"
               >
                 <Camera className="w-4 h-4 text-blue-600" />
-                <span>{isScanningPlate ? "Okunuyor (<300ms)..." : "Kameradan Plaka Tara"}</span>
+                <span>
+                  {isScanningPlate
+                    ? "Okunuyor (<300ms)..."
+                    : config.scanActions?.cameraButton || (sector === "automotive" ? "Kameradan Plaka Tara" : "Kameradan Karekod / QR Oku")}
+                </span>
               </button>
 
               <button
@@ -407,7 +439,11 @@ export const HiVehicleIntakeForm: React.FC = () => {
                 className="flex-1 min-h-[52px] px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>{isProcessingOcr ? "TSB Eşleniyor..." : "Ruhsat OCR & TSB Doldur"}</span>
+                <span>
+                  {isProcessingOcr
+                    ? "Eşleniyor..."
+                    : config.scanActions?.catalogButton || (sector === "automotive" ? "Ruhsat OCR & TSB Doldur" : "Resmi Künye / Model Doldur")}
+                </span>
               </button>
             </div>
           </div>
@@ -419,30 +455,36 @@ export const HiVehicleIntakeForm: React.FC = () => {
             </div>
           )}
 
-          {/* Araç Ayrıntıları (TSB Otomatik Dolum Alanları) */}
+          {/* Varlık Ayrıntıları (Model & Teknik Kod Alanları) */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
             <div>
-              <label className="block text-[11px] font-semibold text-slate-500 mb-1">Marka</label>
+              <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                {sector === "automotive" ? "Marka" : "Üretici / Marka"}
+              </label>
               <input
                 type="text"
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
-                placeholder="Örn: Volkswagen"
+                placeholder={sector === "automotive" ? "Örn: Volkswagen" : sector === "elevator" ? "Örn: Otis / Kone" : "Örn: Üretici Marka"}
                 className="w-full px-3 py-2 text-xs font-semibold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-slate-500 mb-1">Model / Motor</label>
+              <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                {sector === "automotive" ? "Model / Motor" : sector === "elevator" ? "Model / Kabin Tipi" : "Model / Seri"}
+              </label>
               <input
                 type="text"
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
-                placeholder="Örn: Passat 1.6 TDI"
+                placeholder={sector === "automotive" ? "Örn: Passat 1.6 TDI" : sector === "elevator" ? "Örn: Gen2 (10 Kişi / 800 kg)" : "Örn: Model Tipi"}
                 className="w-full px-3 py-2 text-xs font-semibold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-slate-500 mb-1">Model Yılı</label>
+              <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                {sector === "automotive" ? "Model Yılı" : "İmalat / Montaj Yılı"}
+              </label>
               <input
                 type="number"
                 value={modelYear}
@@ -451,12 +493,14 @@ export const HiVehicleIntakeForm: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-slate-500 mb-1">TSB Kasko Kodu</label>
+              <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                {config.scanActions?.technicalCodeLabel || (sector === "automotive" ? "TSB Kasko Kodu" : "Resmi Kimlik / Kayıt No")}
+              </label>
               <input
                 type="text"
                 value={tsbCode}
                 onChange={(e) => setTsbCode(e.target.value)}
-                placeholder="1531245"
+                placeholder={config.scanActions?.technicalCodePlaceholder || "1531245"}
                 className="w-full px-3 py-2 text-xs font-mono font-semibold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
               />
             </div>
@@ -847,7 +891,11 @@ export const HiVehicleIntakeForm: React.FC = () => {
             className="text-base font-bold shadow-lg shadow-blue-500/20"
           >
             <CheckCircle2 className="w-5 h-5 mr-2" />
-            <span>KABULÜ TAMAMLA &amp; LİFTE SEVK ET (30s)</span>
+            <span>
+              {sector === "automotive"
+                ? "KABULÜ TAMAMLA & LİFTE SEVK ET (30s)"
+                : `KABULÜ TAMAMLA & SAHAYA SEVK ET (30s)`}
+            </span>
           </HiButton56>
         </div>
       </form>

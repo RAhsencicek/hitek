@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { HiAssetBadge } from "@/components/ui/HiAssetBadge";
 import { HiStatusBadge, HiWorkOrderStatus } from "@/components/ui/HiStatusBadge";
 import { useSector } from "@/lib/SectorContext";
@@ -133,12 +133,51 @@ export const HiWorkshopKanban: React.FC<HiWorkshopKanbanProps> = ({
   const [cards, setCards] = useState<KanbanCardData[]>(INITIAL_CARDS);
   const [filterPriority, setFilterPriority] = useState<string>("All");
 
-  const BAYS = [
-    { id: "lift-1", name: "LİFT 1 (Mekanik / Ağır Bakım)", tech: "Ahmet Usta" },
-    { id: "lift-2", name: "LİFT 2 (Periyodik Hızlı Bakım)", tech: "Can Usta" },
-    { id: "lift-3", name: "LİFT 3 (Rot-Balans / Ön Takım)", tech: "Murat Usta" },
-    { id: "bay-qc", name: "Kalite Kontrol & Teslimat", tech: "Hakan Danışman" },
-  ];
+  const BAYS = config.id === "automotive"
+    ? [
+        { id: "lift-1", name: "LİFT 1 (Mekanik / Ağır Bakım)", tech: "Ahmet Usta" },
+        { id: "lift-2", name: "LİFT 2 (Periyodik Hızlı Bakım)", tech: "Can Usta" },
+        { id: "lift-3", name: "LİFT 3 (Rot-Balans / Ön Takım)", tech: "Murat Usta" },
+        { id: "bay-qc", name: "Kalite Kontrol & Teslimat", tech: "Hakan Danışman" },
+      ]
+    : config.bayStations.map((b, i) => ({
+        id: b.id.toLowerCase(),
+        name: b.name,
+        tech: ["Murat Usta", "Kemal Usta", "Sinan Usta", "Hakan Danışman"][i] || "Saha Ekibi",
+      }));
+
+  useEffect(() => {
+    if (config.id === "automotive") {
+      setCards(INITIAL_CARDS);
+    } else {
+      const bays = BAYS;
+      const adapted: KanbanCardData[] = config.demoSamples.map((sample, idx) => {
+        const assignedBay = bays[idx % bays.length];
+        const priorities: KanbanCardData["priority"][] = ["Urgent", "Normal", "Waiter", "Vip"];
+        const statuses: HiWorkOrderStatus[] = ["InProgress", "Completed", "WaitingParts", "CustomerApproval"];
+        return {
+          id: `wo-sec-${sample.id}`,
+          workOrderNumber: `WO-${config.tag.slice(0, 3).toUpperCase()}-${10490 + idx}`,
+          plate: sample.primaryId,
+          brand: sample.brand,
+          model: sample.model,
+          modelYear: sample.modelYear,
+          customerName: sample.customerName,
+          complaint: sample.complaint,
+          status: statuses[idx % statuses.length],
+          priority: priorities[idx % priorities.length],
+          bayId: assignedBay ? assignedBay.id : "bay-1",
+          bayName: assignedBay ? assignedBay.name : "İstasyon",
+          technicianName: assignedBay ? assignedBay.tech : "Usta",
+          progressPercent: 50 + idx * 20,
+          elapsedMinutes: 45 + idx * 15,
+          targetMinutes: 90,
+          isLaborRunning: idx === 0,
+        };
+      });
+      setCards(adapted.length > 0 ? adapted : INITIAL_CARDS);
+    }
+  }, [config.id]);
 
   const PRIORITY_FLAGS: Record<string, { label: string; badgeClass: string }> = {
     Urgent: { label: "🔴 Acil", badgeClass: "bg-red-100 text-red-800 border-red-300 dark:bg-red-950 dark:text-red-300" },

@@ -35,6 +35,25 @@ export interface SectorConfig {
   branchDefaultName: string;
   assetTypeName: string;
   hasFuelGauge: boolean;
+  scanActions: {
+    cameraButton: string;
+    catalogButton: string;
+    technicalCodeLabel: string;
+    technicalCodePlaceholder: string;
+    cameraSuccessMsg: string;
+    catalogSuccessMsg: string;
+  };
+  sampleRecognition: {
+    primaryId: string;
+    secondaryId: string;
+    brand: string;
+    model: string;
+    modelYear: number;
+    technicalCode: string;
+    meter: number;
+    customerName: string;
+    customerPhone: string;
+  };
   primaryIdentifier: {
     label: string;
     placeholder: string;
@@ -71,6 +90,25 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
     branchDefaultName: "Maslak Atatürk Oto Sanayi Şubesi",
     assetTypeName: "Araç",
     hasFuelGauge: true,
+    scanActions: {
+      cameraButton: "Kameradan Plaka Tara",
+      catalogButton: "Ruhsat OCR & TSB Doldur",
+      technicalCodeLabel: "TSB Kasko Kodu",
+      technicalCodePlaceholder: "1531245",
+      cameraSuccessMsg: "Kameradan Plaka Okundu: 34 ABC 123 (Passat B8)",
+      catalogSuccessMsg: "Ruhsat OCR & TSB Kasko Kataloğu eşleşti: Toyota Corolla 1.8 Hybrid Dream (%98 Güven)",
+    },
+    sampleRecognition: {
+      primaryId: "35 CDE 789",
+      secondaryId: "NMTEB3BE30R109823",
+      brand: "Toyota",
+      model: "Corolla 1.8 Hybrid Dream",
+      modelYear: 2022,
+      technicalCode: "2081190",
+      meter: 42100,
+      customerName: "Burak Kaya",
+      customerPhone: "0535 777 8899",
+    },
     primaryIdentifier: {
       label: "Araç Plakası (Türk Standart Plaka)",
       placeholder: "34 ABC 123",
@@ -150,6 +188,25 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
     branchDefaultName: "Kadıköy Isıtma, Soğutma & Kombi Servis Merkezi",
     assetTypeName: "Cihaz / Ünite",
     hasFuelGauge: false,
+    scanActions: {
+      cameraButton: "Kameradan Cihaz Barkodu Oku",
+      catalogButton: "Üretici Künye / Model Doldur",
+      technicalCodeLabel: "Kapasite (kW / kcal)",
+      technicalCodePlaceholder: "24 kW Yoğuşmalı",
+      cameraSuccessMsg: "Kameradan Cihaz Barkodu Okundu: KMB-2024-8910 (Vaillant ecoTEC)",
+      catalogSuccessMsg: "Üretici Cihaz Kataloğu eşleşti: Buderus Logamax Plus GB172i (30 kW Yoğuşmalı)",
+    },
+    sampleRecognition: {
+      primaryId: "KMB-2024-5512",
+      secondaryId: "SER-BUD-77881",
+      brand: "Buderus",
+      model: "Logamax Plus GB172i (30 kW)",
+      modelYear: 2022,
+      technicalCode: "30 kW / Doğalgaz",
+      meter: 3,
+      customerName: "Sinan Özkan",
+      customerPhone: "0532 999 1122",
+    },
     primaryIdentifier: {
       label: "Cihaz / Tesisat Barkod No",
       placeholder: "KMB-2024-8910",
@@ -229,6 +286,25 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
     branchDefaultName: "Beşiktaş E-Mobility & Motosiklet Bakım Merkezi",
     assetTypeName: "Araç / Scooter",
     hasFuelGauge: true,
+    scanActions: {
+      cameraButton: "Kameradan QR / Plaka Oku",
+      catalogButton: "Filo Envanteri / Model Doldur",
+      technicalCodeLabel: "Batarya / Motor Kapasitesi",
+      technicalCodePlaceholder: "48V 15Ah / 350W",
+      cameraSuccessMsg: "Kameradan QR Kod Okundu: 34 MTO 99 (Yamaha XMAX)",
+      catalogSuccessMsg: "Filo IoT Envanteri eşleşti: Segway Ninebot Max Plus (IoT Entegreli)",
+    },
+    sampleRecognition: {
+      primaryId: "SC-2024-9988",
+      secondaryId: "IOT-SEG-55441",
+      brand: "Segway Ninebot",
+      model: "Max Plus Commercial (IoT)",
+      modelYear: 2023,
+      technicalCode: "36V 15.3Ah / 550W",
+      meter: 3420,
+      customerName: "Martı & BinBin Filo Operasyon",
+      customerPhone: "0530 123 4567",
+    },
     primaryIdentifier: {
       label: "Plaka veya Şasi / Gövde No",
       placeholder: "34 MTO 99 / SC-8812",
@@ -308,6 +384,25 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
     branchDefaultName: "Şişli Asansör Periyodik Bakım & Revizyon İstasyonu",
     assetTypeName: "Asansör Ünitesi",
     hasFuelGauge: false,
+    scanActions: {
+      cameraButton: "Kameradan Bakanlık QR Oku",
+      catalogButton: "AsansörNet & Künye Doldur",
+      technicalCodeLabel: "Bakanlık Kayıt / Kimlik No",
+      technicalCodePlaceholder: "AS-UAVT-10492",
+      cameraSuccessMsg: "Kameradan Bakanlık QR Kodu Okundu: AS-34-10492 (Otis Gen2)",
+      catalogSuccessMsg: "Bakanlık AsansörNet Envanteri eşleşti: Kone MonoSpace 500 (13 Kişilik / 1000 kg)",
+    },
+    sampleRecognition: {
+      primaryId: "AS-34-88421",
+      secondaryId: "UAVT-KONE-99120",
+      brand: "Kone",
+      model: "MonoSpace 500 (13 Kişi / 1.75 m/s)",
+      modelYear: 2021,
+      technicalCode: "AS-REG-88421",
+      meter: 36,
+      customerName: "Ağaoğlu My World Yönetimi",
+      customerPhone: "0533 444 5566",
+    },
     primaryIdentifier: {
       label: "Bakanlık Asansör Kimlik / UAVT No",
       placeholder: "AS-34-10492",
@@ -374,6 +469,25 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
     branchDefaultName: "İkitelli Güç Sistemleri & Jeneratör Servis Merkezi",
     assetTypeName: "Jeneratör / Kompresör",
     hasFuelGauge: true,
+    scanActions: {
+      cameraButton: "Kameradan Künye / Seri Oku",
+      catalogButton: "Güç Kataloğundan Doldur",
+      technicalCodeLabel: "Güç / Frekans (kVA)",
+      technicalCodePlaceholder: "50 kVA / 50 Hz",
+      cameraSuccessMsg: "Kameradan Şasi Seri No Okundu: GEN-50KVA-7721 (Aksa APD-50A)",
+      catalogSuccessMsg: "Teknik Güç Kataloğu eşleşti: Cummins C110D5 (110 kVA / Dizel Kabinli)",
+    },
+    sampleRecognition: {
+      primaryId: "GEN-110KVA-9012",
+      secondaryId: "ENG-CUM-4BT39",
+      brand: "Cummins",
+      model: "C110D5 Silent Series",
+      modelYear: 2021,
+      technicalCode: "110 kVA / 50 Hz / 400V",
+      meter: 1450,
+      customerName: "Acıbadem Sağlık Grubu Maslak",
+      customerPhone: "0212 333 4455",
+    },
     primaryIdentifier: {
       label: "Şasi / Cihaz Seri Numarası",
       placeholder: "GEN-50KVA-7721",
@@ -440,6 +554,25 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
     branchDefaultName: "Merkez Teknik Servis & Onarım Atölyesi",
     assetTypeName: "Varlık / Cihaz",
     hasFuelGauge: false,
+    scanActions: {
+      cameraButton: "Kameradan Seri / Barkod Oku",
+      catalogButton: "Cihaz Kataloğundan Doldur",
+      technicalCodeLabel: "Cihaz Sınıfı / Güç",
+      technicalCodePlaceholder: "CNC Torna / 15 kW",
+      cameraSuccessMsg: "Kameradan Envanter Barkodu Okundu: SN-DEV-2026-001 (DMG MORI)",
+      catalogSuccessMsg: "Makine Kataloğu eşleşti: Mazak Quick Turn 250 (CNC Torna / 15 kW)",
+    },
+    sampleRecognition: {
+      primaryId: "SN-CNC-2026-4411",
+      secondaryId: "MAZ-QT250-8812",
+      brand: "Mazak",
+      model: "Quick Turn 250 (CNC Torna)",
+      modelYear: 2022,
+      technicalCode: "15 kW / 4000 RPM / ISO 40",
+      meter: 2100,
+      customerName: "Ermetal Otomotiv & Kalıp Sanayi",
+      customerPhone: "0224 222 3344",
+    },
     primaryIdentifier: {
       label: "Cihaz Seri No / Envanter Barkodu",
       placeholder: "SN-DEV-2026-001",
