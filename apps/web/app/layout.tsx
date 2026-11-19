@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { SectorProvider } from "@/lib/SectorContext";
 
 export const metadata: Metadata = {
-  title: "HiServis AI — Tasarım Sistemi & UI-Kit Vitrini",
-  description: "Oto Servis & Filo Yönetimi için Dokunmatik Odaklı Tasarım Sistemi",
+  title: "HiServis AI — Çok Sektörlü Akıllı Servis Yönetim Sistemi",
+  description: "Oto Servis, Asansör, Kombi, Jeneratör & Genel Sanayi için Saha ve Atölye Yönetim Sistemi",
 };
 
 export default function RootLayout({
@@ -18,7 +19,7 @@ export default function RootLayout({
         <meta name="color-scheme" content="light dark" />
       </head>
       <body className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#F8FAFC]">
-        {children}
+        <SectorProvider>{children}</SectorProvider>
       </body>
     </html>
   );

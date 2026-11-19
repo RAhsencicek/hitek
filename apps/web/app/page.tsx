@@ -9,11 +9,14 @@ import { HiReceivingConsole } from "@/components/warehouse/HiReceivingConsole";
 import { HiProcurementPanel } from "@/components/procurement/HiProcurementPanel";
 import { Car, Kanban, Wrench, Palette, Sparkles, MapPin, Barcode, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSector } from "@/lib/SectorContext";
+import { HiSectorSwitcher } from "@/components/ui/HiSectorSwitcher";
 
 type ActiveTab = "intake" | "kanban" | "techboard" | "receiving" | "procurement" | "showcase";
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("intake");
+  const { config } = useSector();
 
   const TABS = [
     {
@@ -76,36 +79,40 @@ export default function HomePage() {
             </div>
 
             <div className="hidden md:flex items-center gap-1.5 text-xs text-slate-500 font-semibold pl-3 border-l border-slate-200 dark:border-slate-800">
-              <MapPin className="w-3.5 h-3.5 text-red-500" />
-              <span>Maslak Atatürk Oto Sanayi Şubesi</span>
+              <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
+              <span className="truncate max-w-[220px]">{config.branchDefaultName}</span>
             </div>
           </div>
 
-          {/* Sekme Navigasyonu */}
-          <nav className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl">
-            {TABS.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
+          {/* Sektör Seçici & Sekme Navigasyonu */}
+          <div className="flex items-center gap-3">
+            <HiSectorSwitcher />
 
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveTab(tab.id)}
-                  className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all select-none",
-                    isActive
-                      ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-                  )}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span className="hidden lg:inline">{tab.label}</span>
-                  <span className="lg:hidden">{tab.label.split(" ")[0]}</span>
-                </button>
-              );
-            })}
-          </nav>
+            <nav className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl">
+              {TABS.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all select-none",
+                      isActive
+                        ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                    )}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span className="hidden lg:inline">{tab.label}</span>
+                    <span className="lg:hidden">{tab.label.split(" ")[0]}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
         </div>
       </header>
 

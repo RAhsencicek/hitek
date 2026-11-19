@@ -2,7 +2,9 @@
 
 import React, { useState } from "react";
 import { HiPlateBadge } from "@/components/ui/HiPlateBadge";
+import { HiAssetBadge } from "@/components/ui/HiAssetBadge";
 import { HiStatusBadge, HiWorkOrderStatus } from "@/components/ui/HiStatusBadge";
+import { useSector } from "@/lib/SectorContext";
 import {
   Wrench,
   Clock,
@@ -128,6 +130,7 @@ export const HiWorkshopKanban: React.FC<HiWorkshopKanbanProps> = ({
   onOpenTechBoard,
   onOpenIntake,
 }) => {
+  const { config } = useSector();
   const [cards, setCards] = useState<KanbanCardData[]>(INITIAL_CARDS);
   const [filterPriority, setFilterPriority] = useState<string>("All");
 
@@ -271,9 +274,13 @@ export const HiWorkshopKanban: React.FC<HiWorkshopKanbanProps> = ({
                         key={card.id}
                         className="bg-white dark:bg-slate-900 rounded-xl p-3.5 shadow-sm border border-slate-200/90 dark:border-slate-800 hover:border-blue-400 transition-all space-y-2.5"
                       >
-                        {/* Plaka ve RO No */}
+                        {/* Plaka / Kimlik ve RO No */}
                         <div className="flex items-start justify-between gap-2">
-                          <HiPlateBadge plate={card.plate} size="md" />
+                          <HiAssetBadge
+                            identifier={card.plate}
+                            badgeType={config.primaryIdentifier.badgeType}
+                            size="md"
+                          />
                           <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                             {card.workOrderNumber}
                           </span>

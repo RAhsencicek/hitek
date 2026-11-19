@@ -2,7 +2,9 @@
 
 import React, { useState } from "react";
 import { HiPlateBadge } from "@/components/ui/HiPlateBadge";
+import { HiAssetBadge } from "@/components/ui/HiAssetBadge";
 import { HiButton56 } from "@/components/ui/HiButton56";
+import { useSector } from "@/lib/SectorContext";
 import { Printer, Check, Copy, X, QrCode, Cpu, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AllocatePartResponse } from "@/lib/api";
@@ -18,6 +20,7 @@ export const HiSealedLabelModal: React.FC<HiSealedLabelModalProps> = ({
   onClose,
   labelData,
 }) => {
+  const { config } = useSector();
   const [copied, setCopied] = useState<boolean>(false);
   const [printed, setPrinted] = useState<boolean>(true);
 
@@ -81,7 +84,7 @@ export const HiSealedLabelModal: React.FC<HiSealedLabelModalProps> = ({
               <span className="text-slate-600 dark:text-slate-400">MASLAK ATATÜRK OTO</span>
             </div>
 
-            {/* İş Emri ve Plaka */}
+            {/* İş Emri ve Plaka / Varlık Kimliği */}
             <div className="flex items-center justify-between gap-2 pt-1">
               <div>
                 <div className="text-[10px] text-slate-500 uppercase">İŞ EMRİ NO:</div>
@@ -89,7 +92,11 @@ export const HiSealedLabelModal: React.FC<HiSealedLabelModalProps> = ({
                   #{labelData.workOrderNumber}
                 </div>
               </div>
-              <HiPlateBadge plate={labelData.plate} size="sm" />
+              <HiAssetBadge
+                identifier={labelData.plate}
+                badgeType={config.primaryIdentifier.badgeType}
+                size="sm"
+              />
             </div>
 
             {/* Şase ve Parça */}

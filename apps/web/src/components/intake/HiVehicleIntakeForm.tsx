@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { HiPlateBadge, formatTurkishPlate } from "@/components/ui/HiPlateBadge";
+import { HiAssetBadge } from "@/components/ui/HiAssetBadge";
 import { HiButton56 } from "@/components/ui/HiButton56";
 import { HiNumpad } from "@/components/ui/HiNumpad";
 import { HiDamageInspection, DamageMarker } from "@/components/ui/HiDamageInspection";
 import { HiReceiptModal } from "@/components/receipt/HiReceiptModal";
+import { useSector } from "@/lib/SectorContext";
 import {
   Camera,
   Search,
@@ -35,6 +37,8 @@ export interface PastServiceRecord {
 }
 
 export const HiVehicleIntakeForm: React.FC = () => {
+  const { config, sector } = useSector();
+
   // Form State
   const [plate, setPlate] = useState("34 ABC 123");
   const [vin, setVin] = useState("WVWZZZ3CZWE104921");
@@ -49,6 +53,7 @@ export const HiVehicleIntakeForm: React.FC = () => {
   const [fuelLevel, setFuelLevel] = useState<number>(0.5);
   const [priority, setPriority] = useState<string>("Urgent");
   const [selectedBay, setSelectedBay] = useState<string>("LIFT-1");
+  const [industrialInspection, setIndustrialInspection] = useState<Record<string, "pass" | "attention" | "fail">>({});
   const [damageMarkers, setDamageMarkers] = useState<DamageMarker[]>([
     {
       id: "dmg-1",
@@ -60,6 +65,42 @@ export const HiVehicleIntakeForm: React.FC = () => {
       notes: "Kaldırıma hafif sürtme",
     },
   ]);
+
+  // Sektör Değiştiğinde Formu Dinamik Güncelle
+  useEffect(() => {
+    if (sector !== "automotive" && config.demoSamples.length > 0) {
+      const sample = config.demoSamples[0];
+      setPlate(sample.primaryId);
+      setVin(sample.secondaryId);
+      setBrand(sample.brand);
+      setModel(sample.model);
+      setModelYear(sample.modelYear);
+      setMeter(sample.meter);
+      setCustomerName(sample.customerName);
+      setCustomerPhone(sample.customerPhone);
+      setComplaint(sample.complaint);
+      if (config.bayStations.length > 0) {
+        setSelectedBay(config.bayStations[0].id);
+      }
+      setIsRecognized(true);
+      setOutstandingBalance(0);
+      setPastServices([]);
+      setOcrSuccessMsg(null);
+    } else if (sector === "automotive") {
+      setPlate("34 ABC 123");
+      setVin("WVWZZZ3CZWE104921");
+      setBrand("Volkswagen");
+      setModel("Passat 1.6 TDI Comfortline");
+      setModelYear(2021);
+      setTsbCode("1531245");
+      setMeter(145200);
+      setCustomerName("Mehmet Yılmaz");
+      setCustomerPhone("0532 999 8877");
+      setComplaint("Ön takımdan kasislerde gıcırtı ve frene basınca titreme geliyor.");
+      setSelectedBay("LIFT-1");
+      setIsRecognized(true);
+    }
+  }, [sector, config]);
 
   // Lookup / OCR UI states
   const [isRecognized, setIsRecognized] = useState<boolean>(true);
@@ -226,43 +267,71 @@ export const HiVehicleIntakeForm: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
             <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
-              Hızlı Araç Kabul & İş Emri Girişi
+              {config.intakeTitle}
             </h1>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Hedef Süre: &lt; 30 Saniye • Plaka &amp; Ruhsat OCR Otomasyonu
+            {config.intakeSubtitle}
           </p>
         </div>
 
-        {/* Demo Hızlı Plaka Butonları */}
+        {/* Demo Hızlı Şablon Butonları */}
         <div className="flex flex-wrap items-center gap-1.5 self-start md:self-auto">
-          <span className="text-[11px] font-semibold text-slate-400 mr-1">Demo Plakalar:</span>
-          <button
-            type="button"
-            onClick={() => handleSelectPreset("34 ABC 123")}
-            className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 border border-slate-200 transition-colors"
-          >
-            34 ABC 123 (Passat)
-          </button>
-          <button
-            type="button"
-            onClick={() => handleSelectPreset("06 BCD 456")}
-            className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 border border-slate-200 transition-colors"
-          >
-            06 BCD 456 (Megane)
-          </button>
-          <button
-            type="button"
-            onClick={() => handleSelectPreset("35 CDE 789")}
-            className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition-colors"
-          >
-            35 CDE 789 (Yeni Araç)
-          </button>
+          <span className="text-[11px] font-semibold text-slate-400 mr-1">Demo Şablonlar:</span>
+          {sector === "automotive" ? (
+            <>
+              <button
+                type="button"
+                onClick={() => handleSelectPreset("34 ABC 123")}
+                className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 border border-slate-200 transition-colors"
+              >
+                34 ABC 123 (Passat)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSelectPreset("06 BCD 456")}
+                className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 border border-slate-200 transition-colors"
+              >
+                06 BCD 456 (Megane)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSelectPreset("35 CDE 789")}
+                className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition-colors"
+              >
+                35 CDE 789 (Yeni Araç)
+              </button>
+            </>
+          ) : (
+            config.demoSamples.map((sample) => (
+              <button
+                key={sample.id}
+                type="button"
+                onClick={() => {
+                  setPlate(sample.primaryId);
+                  setVin(sample.secondaryId);
+                  setBrand(sample.brand);
+                  setModel(sample.model);
+                  setModelYear(sample.modelYear);
+                  setMeter(sample.meter);
+                  setCustomerName(sample.customerName);
+                  setCustomerPhone(sample.customerPhone);
+                  setComplaint(sample.complaint);
+                  setIsRecognized(true);
+                  setOutstandingBalance(0);
+                  setPastServices([]);
+                }}
+                className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 transition-colors"
+              >
+                {sample.label}
+              </button>
+            ))
+          )}
         </div>
       </div>
 
       <form onSubmit={handleSubmitIntake} className="space-y-6">
-        {/* ADIM 1: Plaka Tanıma & Ruhsat OCR Kartı */}
+        {/* ADIM 1: Tanıma & Kimlik Kartı */}
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2">
@@ -270,39 +339,49 @@ export const HiVehicleIntakeForm: React.FC = () => {
                 1
               </div>
               <h2 className="font-bold text-base text-slate-900 dark:text-slate-100">
-                Araç Tanıma &amp; Ruhsat Bilgileri
+                {sector === "automotive" ? "Araç Tanıma & Ruhsat Bilgileri" : `${config.assetTypeName} Tanımlama & Kimlik Bilgileri`}
               </h2>
             </div>
 
             {isRecognized ? (
               <span className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Tanınan Araç (Kayıtlı)</span>
+                <span>Tanınan Kayıtlı {config.assetTypeName}</span>
               </span>
             ) : (
               <span className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
                 <AlertTriangle className="w-3.5 h-3.5" />
-                <span>Yeni Araç Kaydı</span>
+                <span>Yeni {config.assetTypeName} Kaydı</span>
               </span>
             )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-            {/* Plaka Giriş & Rozet Alanı */}
+            {/* Plaka / Kimlik Giriş & Rozet Alanı */}
             <div className="md:col-span-6 space-y-2">
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                Araç Plakası (Türk Standart Plaka):
+                {config.primaryIdentifier.label}:
               </label>
               <div className="flex items-center gap-2">
                 <div className="shrink-0">
-                  <HiPlateBadge plate={plate} size="hero" />
+                  <HiAssetBadge
+                    identifier={plate}
+                    badgeType={config.primaryIdentifier.badgeType}
+                    size="hero"
+                  />
                 </div>
                 <div className="flex-1">
                   <input
                     type="text"
                     value={plate}
-                    onChange={(e) => setPlate(formatTurkishPlate(e.target.value))}
-                    placeholder="34 ABC 123"
+                    onChange={(e) =>
+                      setPlate(
+                        config.primaryIdentifier.badgeType === "plate"
+                          ? formatTurkishPlate(e.target.value)
+                          : e.target.value.toUpperCase()
+                      )
+                    }
+                    placeholder={config.primaryIdentifier.placeholder}
                     className="w-full px-3 py-2.5 text-base font-mono font-bold tracking-wider uppercase rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-600 outline-none"
                   />
                 </div>
@@ -384,12 +463,14 @@ export const HiVehicleIntakeForm: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-[11px] font-semibold text-slate-500 mb-1">Şase Numarası (VIN - 17 Hane)</label>
+            <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+              {config.secondaryIdentifier.label}
+            </label>
             <input
               type="text"
               value={vin}
               onChange={(e) => setVin(e.target.value.toUpperCase())}
-              placeholder="WVWZZZ3CZWE123456"
+              placeholder={config.secondaryIdentifier.placeholder}
               className="w-full px-3 py-2 text-xs font-mono font-bold tracking-wider rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
             />
           </div>
@@ -446,15 +527,15 @@ export const HiVehicleIntakeForm: React.FC = () => {
               2
             </div>
             <h2 className="font-bold text-base text-slate-900 dark:text-slate-100">
-              Kilometre, Müşteri &amp; Yakıt Durumu
+              {sector === "automotive" ? "Kilometre, Müşteri & Yakıt Durumu" : `${config.meter.label} & Müşteri Bilgileri`}
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Kilometre Alanı & Dev Numpad Tetikleyici */}
+            {/* Kilometre / Sayaç Alanı & Dev Numpad Tetikleyici */}
             <div className="space-y-2">
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                Güncel Araç Kilometresi (KM):
+                {sector === "automotive" ? "Güncel Araç Kilometresi (KM):" : `${config.meter.label} (${config.meter.unit}):`}
               </label>
               <div className="flex gap-2">
                 <input
@@ -556,22 +637,103 @@ export const HiVehicleIntakeForm: React.FC = () => {
           </div>
         </div>
 
-        {/* ADIM 3: 2D Kaporta Hasar Şeması */}
-        <div className="space-y-2">
-          <HiDamageInspection
-            markers={damageMarkers}
-            onChange={setDamageMarkers}
-          />
-        </div>
+        {/* ADIM 3: 2D Kaporta Hasar Şeması veya Sektörel DVI Muayenesi */}
+        {sector === "automotive" ? (
+          <div className="space-y-2">
+            <HiDamageInspection
+              markers={damageMarkers}
+              onChange={setDamageMarkers}
+            />
+          </div>
+        ) : (
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
+                  DVI
+                </div>
+                <div>
+                  <h2 className="font-bold text-base text-slate-900 dark:text-slate-100">
+                    {config.inspectionTitle}
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Sektörel muayene ve kabul öncesi teknik kontrol listesi
+                  </p>
+                </div>
+              </div>
+            </div>
 
-        {/* ADIM 4: Şikayet, Öncelik & Lift Atama */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {config.inspectionItems.map((item) => {
+                const currentStatus = industrialInspection[item.id] || "pass";
+
+                return (
+                  <div
+                    key={item.id}
+                    className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/40 space-y-2"
+                  >
+                    <div>
+                      <div className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                        {item.label}
+                      </div>
+                      <div className="text-[11px] text-slate-500 mt-0.5">
+                        {item.description}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-1.5 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setIndustrialInspection((prev) => ({ ...prev, [item.id]: "pass" }))}
+                        className={cn(
+                          "py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-center",
+                          currentStatus === "pass"
+                            ? "bg-emerald-600 text-white shadow-xs"
+                            : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-emerald-50"
+                        )}
+                      >
+                        🟢 Sorunsuz
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIndustrialInspection((prev) => ({ ...prev, [item.id]: "attention" }))}
+                        className={cn(
+                          "py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-center",
+                          currentStatus === "attention"
+                            ? "bg-amber-500 text-white shadow-xs"
+                            : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-amber-50"
+                        )}
+                      >
+                        🟡 Takip Et
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIndustrialInspection((prev) => ({ ...prev, [item.id]: "fail" }))}
+                        className={cn(
+                          "py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-center",
+                          currentStatus === "fail"
+                            ? "bg-red-600 text-white shadow-xs"
+                            : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-red-50"
+                        )}
+                      >
+                        🔴 Arızalı / Acil
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ADIM 4: Şikayet, Öncelik & Sevk */}
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
             <div className="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
               3
             </div>
             <h2 className="font-bold text-base text-slate-900 dark:text-slate-100">
-              Müşteri Şikayeti, Öncelik &amp; Lift Sevk
+              Müşteri Şikayeti, Öncelik &amp; İstasyon Sevk
             </h2>
           </div>
 
@@ -583,13 +745,13 @@ export const HiVehicleIntakeForm: React.FC = () => {
               rows={3}
               value={complaint}
               onChange={(e) => setComplaint(e.target.value)}
-              placeholder="Örn: 10.000 KM bakımı yapılacak, frenden ses geliyor"
+              placeholder="Örn: Periyodik bakım, parça değişimi veya arıza tespiti"
               className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-600 outline-none"
             />
 
             {/* Hızlı Şikayet Hapları */}
             <div className="flex flex-wrap gap-1.5 mt-2">
-              {COMPLAINT_PRESETS.map((preset) => (
+              {(config.complaintPresets || COMPLAINT_PRESETS).map((preset) => (
                 <button
                   key={preset}
                   type="button"
@@ -613,7 +775,7 @@ export const HiVehicleIntakeForm: React.FC = () => {
                   { key: "Normal", label: "Normal", color: "bg-slate-100 text-slate-700 border-slate-200" },
                   { key: "Urgent", label: "🔴 Acil", color: "bg-red-50 text-red-700 border-red-200" },
                   { key: "Waiter", label: "⏳ Müşteri Bekliyor", color: "bg-amber-50 text-amber-700 border-amber-200" },
-                  { key: "Vip", label: "🚙 VIP Filo", color: "bg-purple-50 text-purple-700 border-purple-200" },
+                  { key: "Vip", label: "🚙 VIP Kurumsal", color: "bg-purple-50 text-purple-700 border-purple-200" },
                 ].map((item) => (
                   <button
                     key={item.key}
@@ -633,17 +795,20 @@ export const HiVehicleIntakeForm: React.FC = () => {
               </div>
             </div>
 
-            {/* Lift Sevk İstasyonu */}
+            {/* Sevk İstasyonu */}
             <div>
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                Doğrudan Atölye Lifte Sevk:
+                {sector === "automotive" ? "Doğrudan Atölye Lifte Sevk:" : "Doğrudan İstasyon / Saha Ekibine Sevk:"}
               </label>
               <div className="space-y-1.5">
-                {[
-                  { code: "LIFT-1", name: "Lift 1 (Mekanik / Ağır Bakım)", tech: "Ahmet Usta" },
-                  { code: "LIFT-2", name: "Lift 2 (Periyodik Hızlı Bakım)", tech: "Can Usta" },
-                  { code: "LIFT-3", name: "Lift 3 (Rot-Balans / Ön Takım)", tech: "Murat Usta" },
-                ].map((bay) => (
+                {(sector === "automotive"
+                  ? [
+                      { code: "LIFT-1", name: "Lift 1 (Mekanik / Ağır Bakım)", tech: "Ahmet Usta" },
+                      { code: "LIFT-2", name: "Lift 2 (Periyodik Hızlı Bakım)", tech: "Can Usta" },
+                      { code: "LIFT-3", name: "Lift 3 (Rot-Balans / Ön Takım)", tech: "Murat Usta" },
+                    ]
+                  : config.bayStations.map((b) => ({ code: b.id, name: b.name, tech: "Atanacak" }))
+                ).map((bay) => (
                   <button
                     key={bay.code}
                     type="button"
