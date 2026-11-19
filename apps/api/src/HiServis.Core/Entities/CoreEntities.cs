@@ -181,6 +181,7 @@ public class WorkOrderPartRequest
     public string? InternalSealedQr { get; set; } // Sealed QR string
     public string Status { get; set; } = "Pending"; // Pending, Ordered, Allocated, Installed, Returned
     public Guid? TargetWarehouseId { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
 public class PurchaseOrder

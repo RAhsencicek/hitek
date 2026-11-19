@@ -163,6 +163,7 @@ public class HiServisDbContext : DbContext
             );
             modelBuilder.Entity<WorkOrderLine>().HasQueryFilter(l => _tenantContext.TenantId == null || l.TenantId == _tenantContext.TenantId);
             modelBuilder.Entity<WorkOrderPartRequest>().HasQueryFilter(p => _tenantContext.TenantId == null || p.TenantId == _tenantContext.TenantId);
+            modelBuilder.Entity<PurchaseOrderLine>().HasQueryFilter(l => _tenantContext.TenantId == null || l.TenantId == _tenantContext.TenantId);
             modelBuilder.Entity<Warehouse>().HasQueryFilter(w => 
                 _tenantContext.TenantId == null || 
                 (w.TenantId == _tenantContext.TenantId && (_tenantContext.IsTenantAdmin || _tenantContext.BranchId == null || w.BranchId == _tenantContext.BranchId))

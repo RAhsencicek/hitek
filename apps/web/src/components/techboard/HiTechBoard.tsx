@@ -16,7 +16,12 @@ import {
   Clock,
   Sparkles,
   Volume2,
-  Check
+  Check,
+  QrCode,
+  ShieldCheck,
+  AlertTriangle,
+  RotateCcw,
+  X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiClient } from "@/lib/api";
@@ -60,6 +65,59 @@ export const HiTechBoard: React.FC = () => {
   const [isTakingPhoto, setIsTakingPhoto] = useState<boolean>(false);
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
   const [isComplete, setIsComplete] = useState<boolean>(false);
+
+  // Phase 2: Mühür Doğrulama & Çapraz Montaj Kilidi State
+  const [qrVerifyModalOpen, setQrVerifyModalOpen] = useState<boolean>(false);
+  const [qrInput, setQrInput] = useState<string>("HS-WO10492-P01");
+  const [verifyResult, setVerifyResult] = useState<{
+    isValid: boolean;
+    isCrossAssemblyLocked: boolean;
+    message: string;
+  } | null>(null);
+  const [isVerifying, setIsVerifying] = useState<boolean>(false);
+
+  // Phase 2: Tersine Lojistik (Uyumsuz Parça İadesi) State
+  const [returnModalOpen, setReturnModalOpen] = useState<boolean>(false);
+  const [returnReason, setReturnReason] = useState<string>("Boyut Uyumsuz");
+  const [returnNotes, setReturnNotes] = useState<string>("");
+  const [returnSuccess, setReturnSuccess] = useState<string | null>(null);
+
+  const handleVerifySeal = async (tokenToTest?: string) => {
+    const token = tokenToTest || qrInput;
+    setIsVerifying(true);
+    try {
+      const res = await apiClient.verifyPartInstallation({
+        workOrderId: "wo-10492",
+        scannedQr: token,
+      });
+      setVerifyResult(res);
+      setQrVerifyModalOpen(false);
+    } catch (err: any) {
+      setVerifyResult({
+        isValid: false,
+        isCrossAssemblyLocked: false,
+        message: err.message || "Doğrulama başarısız",
+      });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleReturnPart = async () => {
+    try {
+      const res = await apiClient.returnPart({
+        partRequestId: "req-passat-1",
+        reason: returnReason,
+        notes: returnNotes || "Usta tarafından montaj sırasında uyumsuzluk bildirildi.",
+        requestNewPart: true,
+      });
+      setReturnSuccess(res.message);
+      setReturnModalOpen(false);
+      setVerifyResult(null);
+    } catch (err: any) {
+      alert("İade işlemi başarısız: " + err.message);
+    }
+  };
 
   const toggleChecklistItem = (id: string) => {
     setChecklist((prev) =>
@@ -278,13 +336,147 @@ export const HiTechBoard: React.FC = () => {
           </div>
         </div>
 
-        {/* PARÇA DURUMU */}
-        <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-200 font-bold">
-            <Package className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>[ 📦 4/4 Parça Mühürlü Teslim Alındı ]</span>
+        {/* PARÇA DURUMU & MÜHÜRLÜ PARÇA QR KARTI (Faz 2 Modül 3) */}
+        <div className="space-y-3">
+          <div className={cn(
+            "p-3 rounded-xl border flex items-center justify-between text-xs transition-colors",
+            returnSuccess
+              ? "bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800"
+              : "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800"
+          )}>
+            <div className={cn(
+              "flex items-center gap-2 font-bold",
+              returnSuccess ? "text-amber-800 dark:text-amber-200" : "text-emerald-800 dark:text-emerald-200"
+            )}>
+              <Package className="w-4 h-4 shrink-0" />
+              <span>
+                {returnSuccess
+                  ? "[ ⚠️ 1 Parça Tedarikçiye İade Edildi (İkame Bekleniyor) ]"
+                  : verifyResult?.isValid
+                  ? "[ ✅ Parça Montajı Doğrulandı & Takıldı ]"
+                  : "[ 📦 4/4 Parça Mühürlü Teslim Alındı ]"}
+              </span>
+            </div>
+            <span className={cn(
+              "text-[10px] font-semibold",
+              returnSuccess ? "text-amber-600" : "text-emerald-600"
+            )}>
+              {returnSuccess ? "İADE" : verifyResult?.isValid ? "MONTE" : "HAZIR"}
+            </span>
           </div>
-          <span className="text-[10px] font-semibold text-emerald-600">HAZIR</span>
+
+          {/* MÜHÜRLÜ PARÇA KARTI ŞARTNAMESİ (BILESEN_KATALOGU 4.1) */}
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-black text-slate-900 dark:text-slate-100 uppercase tracking-tight">
+                <Package className="w-4 h-4 text-blue-600" />
+                <span>BOSCH ÖN FREN BALATASI</span>
+              </div>
+              <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-lg bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300">
+                HS-WO10492-P01
+              </span>
+            </div>
+
+            <div className="text-[11px] text-slate-500 flex flex-wrap items-center justify-between gap-1">
+              <span>OEM: 5Q0 698 151 B • Tedarikçi: Başbuğ Oto</span>
+              <span className={cn(
+                "font-bold",
+                returnSuccess
+                  ? "text-amber-600 dark:text-amber-400"
+                  : verifyResult?.isValid
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-emerald-600"
+              )}>
+                Durum: [ {returnSuccess ? "İADE EDİLDİ" : verifyResult?.isValid ? "MONTE EDİLDİ" : "HAZIR"} ]
+              </span>
+            </div>
+
+            <div className="pt-1 text-xs text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+              <span>Tahsis Edilen Araç:</span>
+              <HiPlateBadge plate="34 ABC 123" size="sm" />
+              <span className="text-[11px] font-semibold text-slate-500">(Passat B8 - Lift 1 / Ahmet U.)</span>
+            </div>
+
+            {/* Doğrulama Durum Rozeti */}
+            {verifyResult && (
+              <div
+                className={cn(
+                  "p-3 rounded-xl text-xs font-bold flex items-start gap-2 animate-in fade-in",
+                  verifyResult.isValid
+                    ? "bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-200 dark:border-emerald-800"
+                    : "bg-red-100 text-red-900 border border-red-300 dark:bg-red-950 dark:text-red-200 dark:border-red-800"
+                )}
+              >
+                {verifyResult.isValid ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                ) : (
+                  <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                )}
+                <div>
+                  <div>{verifyResult.message}</div>
+                  {verifyResult.isCrossAssemblyLocked && (
+                    <div className="text-[10px] text-red-700 dark:text-red-300 font-normal mt-0.5">
+                      Çapraz Montaj Kilidi Devrede! Parça başka araca aittir, takılamaz.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {returnSuccess && (
+              <div className="p-3 rounded-xl bg-amber-100 text-amber-900 text-xs font-bold flex items-center gap-2 animate-in fade-in">
+                <RotateCcw className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>{returnSuccess}</span>
+              </div>
+            )}
+
+            {/* Çapraz Montaj Doğrulama & İade Butonları (BILESEN_KATALOGU 4.1) */}
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              {returnSuccess ? (
+                <button
+                  type="button"
+                  disabled
+                  className="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 text-xs font-bold flex items-center justify-center gap-1.5 cursor-not-allowed"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  <span>İade Edildi</span>
+                </button>
+              ) : verifyResult?.isValid ? (
+                <button
+                  type="button"
+                  onClick={handleSimulatePhoto}
+                  className="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
+                >
+                  <Camera className="w-4 h-4" />
+                  <span>📸 Parça Montaj Fotoğrafı Çek</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setQrVerifyModalOpen(true)}
+                  className="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
+                >
+                  <QrCode className="w-4 h-4" />
+                  <span>Mühür Doğrula (QR)</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                disabled={Boolean(returnSuccess)}
+                onClick={() => setReturnModalOpen(true)}
+                className={cn(
+                  "py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all",
+                  returnSuccess
+                    ? "bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700 cursor-not-allowed"
+                    : "border border-red-300 dark:border-red-800 text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 hover:bg-red-100"
+                )}
+              >
+                <AlertTriangle className="w-4 h-4" />
+                <span>⚠️ Uyumsuz / İade</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Sesli Dikte veya Fotoğraf Çıktısı Gösterimi */}
@@ -351,6 +543,156 @@ export const HiTechBoard: React.FC = () => {
           <span>✅ Tamamla</span>
         </button>
       </div>
+
+      {/* MÜHÜR DOĞRULAMA MODALI (ÇAPRAZ MONTAJ KİLİDİ TESTİ) */}
+      {qrVerifyModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-sm overflow-hidden flex flex-col p-5 space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <QrCode className="w-5 h-5 text-blue-600" />
+                <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">
+                  Mühür QR Kodu Doğrula
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setQrVerifyModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500">
+              Kutunun üzerindeki 50x30mm mühür etiketinde yer alan QR kod tokenını girin veya okutun:
+            </p>
+
+            <div className="space-y-2">
+              <input
+                type="text"
+                value={qrInput}
+                onChange={(e) => setQrInput(e.target.value)}
+                placeholder="Örn: HS-WO10492-P01"
+                className="w-full h-12 px-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 font-mono text-sm font-bold bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-blue-600"
+              />
+
+              <div className="flex flex-col gap-1.5 pt-1">
+                <span className="text-[10px] text-slate-400 font-semibold">Hızlı Test Senaryoları:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQrInput("HS-WO10492-P01");
+                    handleVerifySeal("HS-WO10492-P01");
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900 text-left text-xs font-bold transition-colors"
+                >
+                  🟢 Doğru Mühür (34 ABC 123 Passat)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQrInput("HS-WOMEGANE-P01");
+                    handleVerifySeal("HS-WOMEGANE-P01");
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900 text-left text-xs font-bold transition-colors"
+                >
+                  🔴 Yanlış Araç Mührü (Çapraz Kilit Tetikle)
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setQrVerifyModalOpen(false)}
+                className="flex-1 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50"
+              >
+                Vazgeç
+              </button>
+              <button
+                type="button"
+                disabled={isVerifying}
+                onClick={() => handleVerifySeal()}
+                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all"
+              >
+                {isVerifying ? "Kontrol Ediliyor..." : "Mührü Onayla"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* UYUMSUZ PARÇA İADE MODALI (TERSİNE LOJİSTİK) */}
+      {returnModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-sm overflow-hidden flex flex-col p-5 space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2 text-red-600">
+                <AlertTriangle className="w-5 h-5" />
+                <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">
+                  Uyumsuz Parça / İade Akışı
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setReturnModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500">
+              Parça iş emrinden düşülecek ve depodaki <span className="font-bold text-slate-700 dark:text-slate-300">&quot;ReturnToSupplier&quot;</span> sanal rafına sevk edilecektir.
+            </p>
+
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                İade Nedeni Seçin:
+              </label>
+              <select
+                value={returnReason}
+                onChange={(e) => setReturnReason(e.target.value)}
+                className="w-full h-11 px-3 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-bold bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-red-500"
+              >
+                <option value="Boyut Uyumsuz">Boyut Uyumsuz (Örn: 288mm vs 312mm)</option>
+                <option value="Hasarlı/Kırık">Hasarlı / Kırık / Deforme</option>
+                <option value="Katalog Hatası">Katalog / OEM Çapraz Kod Hatası</option>
+                <option value="Müşteri Vazgeçti">Müşteri Parça Değişiminden Vazgeçti</option>
+              </select>
+
+              <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block pt-1">
+                Usta Notu (Opsiyonel):
+              </label>
+              <textarea
+                value={returnNotes}
+                onChange={(e) => setReturnNotes(e.target.value)}
+                placeholder="Örn: Disk çapı araca küçük geldi, 312mm sipariş edilmeli..."
+                rows={2}
+                className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-xs bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-red-500"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setReturnModalOpen(false)}
+                className="flex-1 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-400"
+              >
+                Vazgeç
+              </button>
+              <button
+                type="button"
+                onClick={handleReturnPart}
+                className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-sm transition-all"
+              >
+                İadeyi Tamamla
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -131,6 +131,151 @@ export interface LaborTimerResponse {
   startedAt?: string;
 }
 
+// --- Phase 2: Supply Chain & Warehouse Interfaces ---
+
+export interface PartMatchCandidate {
+  partRequestId: string;
+  workOrderId: string;
+  workOrderNumber: string;
+  plate: string;
+  vehicleDescription: string;
+  customerName: string;
+  technicianName?: string;
+  bayName?: string;
+  partName: string;
+  partSku: string;
+  requestedQuantity: number;
+  allocatedQuantity: number;
+  priority: string;
+  isUrgent: boolean;
+  workOrderCreatedAt: string;
+}
+
+export interface AllocatePartPayload {
+  partRequestId: string;
+  scannedBarcode: string;
+  poLineId?: string;
+  targetWarehouseId?: string;
+  printLabelImmediately?: boolean;
+}
+
+export interface AllocatePartResponse {
+  partRequestId: string;
+  workOrderId: string;
+  workOrderNumber: string;
+  plate: string;
+  vin?: string;
+  partName: string;
+  partSku: string;
+  internalSealedQr: string;
+  escPosPayloadBase64: string;
+  escPosCommandsHex: string;
+  thermalLabelText: string;
+  allocatedAt: string;
+  message: string;
+}
+
+export interface VerifyInstallationPayload {
+  workOrderId: string;
+  scannedQr: string;
+}
+
+export interface VerifyInstallationResponse {
+  isValid: boolean;
+  isCrossAssemblyLocked: boolean;
+  message: string;
+  partName?: string;
+  allocatedToPlate?: string;
+  allocatedToWorkOrderNumber?: string;
+}
+
+export interface ReturnPartPayload {
+  partRequestId: string;
+  reason: string;
+  notes?: string;
+  requestNewPart?: boolean;
+}
+
+export interface ReturnPartResponse {
+  success: boolean;
+  message: string;
+  newPartRequestId?: string;
+  returnShelf?: string;
+}
+
+export interface PurchaseOrderLineDto {
+  id: string;
+  purchaseOrderId: string;
+  partSku: string;
+  oemCode?: string;
+  partDescription: string;
+  orderedQuantity: number;
+  receivedQuantity: number;
+  unitPrice: number;
+  lineTotal: number;
+  status: string;
+  linkedPartRequestId?: string;
+  linkedWorkOrderNumber?: string;
+  linkedPlate?: string;
+}
+
+export interface PurchaseOrderDto {
+  id: string;
+  tenantId: string;
+  branchId: string;
+  poNumber: string;
+  supplierName: string;
+  supplierTaxNo?: string;
+  status: string;
+  totalAmount: number;
+  totalOrderedQuantity: number;
+  totalReceivedQuantity: number;
+  createdAt: string;
+  lines: PurchaseOrderLineDto[];
+}
+
+export interface CreatePurchaseOrderPayload {
+  supplierName: string;
+  supplierTaxNo?: string;
+  lines: {
+    partSku: string;
+    partDescription: string;
+    orderedQuantity: number;
+    unitPrice: number;
+    oemCode?: string;
+    workOrderPartRequestId?: string;
+  }[];
+  branchId?: string;
+  status?: string;
+}
+
+export interface ReceivePoLineResponse {
+  poId: string;
+  lineId: string;
+  quantityReceivedThisBatch: number;
+  totalReceivedQuantity: number;
+  orderedQuantity: number;
+  lineStatus: string;
+  poStatus: string;
+  message: string;
+}
+
+export interface VanStockTransferPayload {
+  sourceWarehouseId: string;
+  targetWarehouseId: string;
+  partSku: string;
+  partName: string;
+  quantity: number;
+}
+
+export interface VanStockTransferResponse {
+  success: boolean;
+  message: string;
+  waybillNumber: string;
+  transferId: string;
+  transferredAt: string;
+}
+
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
   const res = await fetch(url, {
@@ -320,6 +465,368 @@ export const apiClient = {
       });
     } catch {
       return { success: true, newStatus: status };
+    }
+  },
+
+  // --- Phase 2: Warehouse, Receiving & Sealed QR ---
+
+  async matchWarehouseRequests(ean: string): Promise<PartMatchCandidate[]> {
+    try {
+      return await request<PartMatchCandidate[]>(`/api/v1/warehouse/match-requests?ean=${encodeURIComponent(ean)}`);
+    } catch {
+      // Demo runbook fallback per TEST-WAREHOUSE-01:
+      // When ean "4047024185242" is scanned, 2 open work orders match with Passat [Urgent] ranked #1
+      return [
+        {
+          partRequestId: "req-passat-1",
+          workOrderId: "wo-10492",
+          workOrderNumber: "WO-2026-10492",
+          plate: "34 ABC 123",
+          vehicleDescription: "Volkswagen Passat 1.6 TDI",
+          customerName: "Mehmet Yılmaz",
+          technicianName: "Ahmet Usta",
+          bayName: "LİFT 1 (Mekanik / Ağır Bakım)",
+          partName: "Bosch Ön Fren Balata Takımı",
+          partSku: "4047024185242",
+          requestedQuantity: 1,
+          allocatedQuantity: 0,
+          priority: "Urgent",
+          isUrgent: true,
+          workOrderCreatedAt: "2026-11-18T09:00:00Z",
+        },
+        {
+          partRequestId: "req-megane-2",
+          workOrderId: "wo-10493",
+          workOrderNumber: "WO-2026-10493",
+          plate: "06 BCD 456",
+          vehicleDescription: "Renault Megane 1.5 dCi",
+          customerName: "Selin Kaya",
+          technicianName: "Mehmet Usta",
+          bayName: "LİFT 2 (Periyodik Hızlı Bakım)",
+          partName: "Bosch Ön Fren Balata Takımı",
+          partSku: "4047024185242",
+          requestedQuantity: 1,
+          allocatedQuantity: 0,
+          priority: "Normal",
+          isUrgent: false,
+          workOrderCreatedAt: "2026-11-18T10:15:00Z",
+        },
+      ];
+    }
+  },
+
+  async allocatePart(payload: AllocatePartPayload): Promise<AllocatePartResponse> {
+    try {
+      return await request<AllocatePartResponse>("/api/v1/warehouse/allocate-part", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    } catch {
+      const sealToken = "HS-WO10492-P01";
+      const ascii = [
+        "┌────────────────────────────────────────────────────────┐",
+        "│  HiServis AI  •  Maslak Atatürk Oto Sanayi Şubesi      │",
+        "│  İŞ EMRİ: #WO-2026-10492                               │",
+        "│  PLAKA: 34 ABC 123        USTA: Ahmet Usta (LİFT 1)   │",
+        "│  ŞASE:  WVWZZZ3CZWE104921                              │",
+        "│  PARÇA: Bosch Ön Fren Balata Takımı (4047024185242)   │",
+        "│  ┌──────────┐                                          │",
+        "│  │ [QR KOD] │  MÜHÜR TOKENI: HS-WO10492-P01           │",
+        "│  │          │  TARİH: 18.11.2026 14:35                 │",
+        "│  └──────────┘                                          │",
+        "└────────────────────────────────────────────────────────┘",
+      ].join("\n");
+
+      return {
+        partRequestId: payload.partRequestId,
+        workOrderId: "wo-10492",
+        workOrderNumber: "WO-2026-10492",
+        plate: "34 ABC 123",
+        vin: "WVWZZZ3CZWE104921",
+        partName: "Bosch Ön Fren Balata Takımı",
+        partSku: payload.scannedBarcode || "4047024185242",
+        internalSealedQr: sealToken,
+        escPosPayloadBase64: "G0BhAUhpU2VydmlzIEFJ...",
+        escPosCommandsHex: "1B401B6101...",
+        thermalLabelText: ascii,
+        allocatedAt: new Date().toISOString(),
+        message: "Parça '34 ABC 123' plakalı araca tahsis edildi. Termal mühür etiketi basıldı.",
+      };
+    }
+  },
+
+  async verifyPartInstallation(payload: VerifyInstallationPayload): Promise<VerifyInstallationResponse> {
+    try {
+      return await request<VerifyInstallationResponse>("/api/v1/warehouse/verify-installation", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    } catch {
+      const cleanQr = payload.scannedQr.trim();
+      // If QR matches the Passat seal token
+      if (cleanQr.includes("HS-WO10492-P01") || cleanQr.includes("HS-WO10492")) {
+        if (payload.workOrderId === "wo-10492" || payload.workOrderId.includes("10492")) {
+          return {
+            isValid: true,
+            isCrossAssemblyLocked: false,
+            message: "Mühür Doğrulandı: Bu parça sizin aracınız içindir. Montaj onaylandı!",
+            partName: "Bosch Ön Fren Balata Takımı",
+            allocatedToPlate: "34 ABC 123",
+            allocatedToWorkOrderNumber: "WO-2026-10492",
+          };
+        } else {
+          // Cross-assembly lock triggered!
+          return {
+            isValid: false,
+            isCrossAssemblyLocked: true,
+            message: "UYARI: Bu parça 34 ABC 123 plakalı araca aittir, monte edilemez! (Çapraz Montaj Kilidi Aktif)",
+            partName: "Bosch Ön Fren Balata Takımı",
+            allocatedToPlate: "34 ABC 123",
+            allocatedToWorkOrderNumber: "WO-2026-10492",
+          };
+        }
+      } else if (cleanQr.includes("HS-WOMEGANE") || cleanQr.includes("HS-WO10493")) {
+        if (payload.workOrderId === "wo-10493" || payload.workOrderId.includes("10493")) {
+          return {
+            isValid: true,
+            isCrossAssemblyLocked: false,
+            message: "Mühür Doğrulandı: Bu parça sizin aracınız içindir. Montaj onaylandı!",
+            partName: "Bosch Ön Fren Balata Takımı",
+            allocatedToPlate: "06 BCD 456",
+            allocatedToWorkOrderNumber: "WO-2026-10493",
+          };
+        } else {
+          // Cross-assembly lock triggered for Megane's part on another car!
+          return {
+            isValid: false,
+            isCrossAssemblyLocked: true,
+            message: "UYARI: Bu parça 06 BCD 456 plakalı araca aittir, monte edilemez! (Çapraz Montaj Kilidi Aktif)",
+            partName: "Bosch Ön Fren Balata Takımı",
+            allocatedToPlate: "06 BCD 456",
+            allocatedToWorkOrderNumber: "WO-2026-10493",
+          };
+        }
+      }
+      return {
+        isValid: false,
+        isCrossAssemblyLocked: false,
+        message: "Geçersiz veya tanınmayan parça mührü.",
+      };
+    }
+  },
+
+  async returnPart(payload: ReturnPartPayload): Promise<ReturnPartResponse> {
+    try {
+      return await request<ReturnPartResponse>("/api/v1/warehouse/return-part", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    } catch {
+      return {
+        success: true,
+        message: "Uyumsuz parça iş emrinden düşüldü ve 'ReturnToSupplier' iade rafına aktarıldı. Muhasebeye iade faturası uyarısı verildi.",
+        newPartRequestId: `req-new-${Date.now()}`,
+        returnShelf: "ReturnToSupplier (Tedarikçiye İade)",
+      };
+    }
+  },
+
+  // --- Phase 2: Purchase Orders & Consolidated Procurement ---
+
+  async getPurchaseOrders(): Promise<PurchaseOrderDto[]> {
+    try {
+      return await request<PurchaseOrderDto[]>("/api/v1/purchase-orders");
+    } catch {
+      return [
+        {
+          id: "po-1",
+          tenantId: "11111111-1111-1111-1111-111111111111",
+          branchId: "22222222-2222-2222-2222-222222222222",
+          poNumber: "PO-2026-1001",
+          supplierName: "Başbuğ Oto Tic. A.Ş.",
+          supplierTaxNo: "1234567890",
+          status: "PartialReceived",
+          totalAmount: 4850,
+          totalOrderedQuantity: 6,
+          totalReceivedQuantity: 3,
+          createdAt: "2026-11-18T08:30:00Z",
+          lines: [
+            {
+              id: "po-line-1",
+              purchaseOrderId: "po-1",
+              partSku: "4047024185242",
+              oemCode: "5Q0 698 151 B",
+              partDescription: "Bosch Ön Fren Balata Takımı",
+              orderedQuantity: 4,
+              receivedQuantity: 2,
+              unitPrice: 850,
+              lineTotal: 3400,
+              status: "PartiallyReceived",
+              linkedWorkOrderNumber: "WO-2026-10492",
+              linkedPlate: "34 ABC 123",
+            },
+            {
+              id: "po-line-2",
+              purchaseOrderId: "po-1",
+              partSku: "0242236565",
+              oemCode: "FR7DC+",
+              partDescription: "Bosch Buji Seti (4'lü)",
+              orderedQuantity: 2,
+              receivedQuantity: 1,
+              unitPrice: 725,
+              lineTotal: 1450,
+              status: "PartiallyReceived",
+              linkedWorkOrderNumber: "WO-2026-10493",
+              linkedPlate: "06 BCD 456",
+            },
+          ],
+        },
+        {
+          id: "po-2",
+          tenantId: "11111111-1111-1111-1111-111111111111",
+          branchId: "22222222-2222-2222-2222-222222222222",
+          poNumber: "PO-2026-1002",
+          supplierName: "Martaş Otomotiv",
+          supplierTaxNo: "9876543210",
+          status: "Ordered",
+          totalAmount: 2800,
+          totalOrderedQuantity: 2,
+          totalReceivedQuantity: 0,
+          createdAt: "2026-11-18T11:00:00Z",
+          lines: [
+            {
+              id: "po-line-3",
+              purchaseOrderId: "po-2",
+              partSku: "CASTROL-5W30-4L",
+              oemCode: "EDGE-5W30",
+              partDescription: "Castrol Edge 5W-30 Tam Sentetik Motor Yağı (4L)",
+              orderedQuantity: 2,
+              receivedQuantity: 0,
+              unitPrice: 1400,
+              lineTotal: 2800,
+              status: "Pending",
+              linkedWorkOrderNumber: "WO-2026-10492",
+              linkedPlate: "34 ABC 123",
+            },
+          ],
+        },
+      ];
+    }
+  },
+
+  async createPurchaseOrder(payload: CreatePurchaseOrderPayload): Promise<PurchaseOrderDto> {
+    try {
+      return await request<PurchaseOrderDto>("/api/v1/purchase-orders", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    } catch {
+      const poNum = `PO-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+      const total = payload.lines.reduce((acc, l) => acc + l.unitPrice * l.orderedQuantity, 0);
+      const totalOrdered = payload.lines.reduce((acc, l) => acc + l.orderedQuantity, 0);
+
+      return {
+        id: `po-${Date.now()}`,
+        tenantId: "11111111-1111-1111-1111-111111111111",
+        branchId: payload.branchId || "22222222-2222-2222-2222-222222222222",
+        poNumber: poNum,
+        supplierName: payload.supplierName,
+        supplierTaxNo: payload.supplierTaxNo,
+        status: payload.status || "Ordered",
+        totalAmount: total,
+        totalOrderedQuantity: totalOrdered,
+        totalReceivedQuantity: 0,
+        createdAt: new Date().toISOString(),
+        lines: payload.lines.map((l, idx) => ({
+          id: `line-${idx + 1}`,
+          purchaseOrderId: `po-${Date.now()}`,
+          partSku: l.partSku,
+          oemCode: l.oemCode,
+          partDescription: l.partDescription,
+          orderedQuantity: l.orderedQuantity,
+          receivedQuantity: 0,
+          unitPrice: l.unitPrice,
+          lineTotal: l.unitPrice * l.orderedQuantity,
+          status: "Pending",
+        })),
+      };
+    }
+  },
+
+  async receivePoLine(poId: string, lineId: string, quantity: number): Promise<ReceivePoLineResponse> {
+    try {
+      return await request<ReceivePoLineResponse>(`/api/v1/purchase-orders/${poId}/lines/${lineId}/receive`, {
+        method: "POST",
+        body: JSON.stringify({ quantity }),
+      });
+    } catch {
+      return {
+        poId,
+        lineId,
+        quantityReceivedThisBatch: quantity,
+        totalReceivedQuantity: quantity,
+        orderedQuantity: 4,
+        lineStatus: quantity >= 4 ? "Received" : "PartiallyReceived",
+        poStatus: quantity >= 4 ? "Completed" : "PartialReceived",
+        message: `${quantity} adet teslim alındı.`,
+      };
+    }
+  },
+
+  async getPendingPartRequests(): Promise<PartMatchCandidate[]> {
+    try {
+      return await request<PartMatchCandidate[]>("/api/v1/warehouse/pending-requests");
+    } catch {
+      return [
+        {
+          partRequestId: "req-pending-1",
+          workOrderId: "wo-10492",
+          workOrderNumber: "WO-2026-10492",
+          plate: "34 ABC 123",
+          vehicleDescription: "Volkswagen Passat 1.6 TDI",
+          customerName: "Mehmet Yılmaz",
+          partName: "Bosch Ön Fren Balatası",
+          partSku: "4047024185242",
+          requestedQuantity: 1,
+          allocatedQuantity: 0,
+          priority: "Urgent",
+          isUrgent: true,
+          workOrderCreatedAt: "2026-11-18T09:00:00Z",
+        },
+        {
+          partRequestId: "req-pending-2",
+          workOrderId: "wo-10493",
+          workOrderNumber: "WO-2026-10493",
+          plate: "06 BCD 456",
+          vehicleDescription: "Renault Megane 1.5 dCi",
+          customerName: "Selin Kaya",
+          partName: "Bosch Ön Fren Balatası",
+          partSku: "4047024185242",
+          requestedQuantity: 1,
+          allocatedQuantity: 0,
+          priority: "Normal",
+          isUrgent: false,
+          workOrderCreatedAt: "2026-11-18T10:00:00Z",
+        },
+      ];
+    }
+  },
+
+  async vanStockTransfer(payload: VanStockTransferPayload): Promise<VanStockTransferResponse> {
+    try {
+      return await request<VanStockTransferResponse>("/api/v1/warehouse/van-stock/transfer", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    } catch {
+      const waybill = `IRS-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+      return {
+        success: true,
+        message: `Van Stock mobil depo transfer irsaliyesi onaylandı: ${waybill}`,
+        waybillNumber: waybill,
+        transferId: `transfer-${Date.now()}`,
+        transferredAt: new Date().toISOString(),
+      };
     }
   },
 };

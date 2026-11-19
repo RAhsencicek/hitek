@@ -220,3 +220,175 @@ public record CustomerIntakeReceiptDto(
     string BranchName,
     string BranchPhone
 );
+
+// --- Phase 2: Supply Chain, Receiving & Sealed QR DTOs ---
+
+public record CreatePurchaseOrderLineRequest(
+    string PartSku,
+    string PartDescription,
+    int OrderedQuantity,
+    decimal UnitPrice,
+    string? OemCode = null,
+    Guid? WorkOrderPartRequestId = null
+);
+
+public record CreatePurchaseOrderRequest(
+    string SupplierName,
+    string? SupplierTaxNo,
+    List<CreatePurchaseOrderLineRequest> Lines,
+    Guid? BranchId = null,
+    string? Status = "Ordered"
+);
+
+public record PurchaseOrderLineDto(
+    Guid Id,
+    Guid PurchaseOrderId,
+    string PartSku,
+    string? OemCode,
+    string PartDescription,
+    int OrderedQuantity,
+    int ReceivedQuantity,
+    decimal UnitPrice,
+    decimal LineTotal,
+    string Status,
+    Guid? LinkedPartRequestId = null,
+    string? LinkedWorkOrderNumber = null,
+    string? LinkedPlate = null
+);
+
+public record PurchaseOrderDto(
+    Guid Id,
+    Guid TenantId,
+    Guid BranchId,
+    string PoNumber,
+    string SupplierName,
+    string? SupplierTaxNo,
+    PoStatus Status,
+    decimal TotalAmount,
+    int TotalOrderedQuantity,
+    int TotalReceivedQuantity,
+    DateTimeOffset CreatedAt,
+    List<PurchaseOrderLineDto> Lines
+);
+
+public record ReceivePoLineRequest(
+    int Quantity
+);
+
+public record ReceivePoLineResultDto(
+    Guid PoId,
+    Guid LineId,
+    int QuantityReceivedThisBatch,
+    int TotalReceivedQuantity,
+    int OrderedQuantity,
+    string LineStatus,
+    PoStatus PoStatus,
+    string Message
+);
+
+public record PartMatchCandidateDto(
+    Guid PartRequestId,
+    Guid WorkOrderId,
+    string WorkOrderNumber,
+    string Plate,
+    string VehicleDescription,
+    string CustomerName,
+    string? TechnicianName,
+    string? BayName,
+    string PartName,
+    string PartSku,
+    int RequestedQuantity,
+    int AllocatedQuantity,
+    string Priority,
+    bool IsUrgent,
+    DateTimeOffset WorkOrderCreatedAt
+);
+
+public record AllocatePartRequest(
+    Guid PartRequestId,
+    string ScannedBarcode,
+    Guid? PoLineId = null,
+    Guid? TargetWarehouseId = null,
+    bool PrintLabelImmediately = true
+);
+
+public record AllocatePartResultDto(
+    Guid PartRequestId,
+    Guid WorkOrderId,
+    string WorkOrderNumber,
+    string Plate,
+    string? Vin,
+    string PartName,
+    string PartSku,
+    string InternalSealedQr,
+    string EscPosPayloadBase64,
+    string EscPosCommandsHex,
+    string ThermalLabelText,
+    DateTimeOffset AllocatedAt,
+    string Message
+);
+
+public record VerifyInstallationRequest(
+    Guid WorkOrderId,
+    string ScannedQr
+);
+
+public record VerifyInstallationResultDto(
+    bool IsValid,
+    bool IsCrossAssemblyLocked,
+    string Message,
+    string? PartName = null,
+    string? AllocatedToPlate = null,
+    string? AllocatedToWorkOrderNumber = null
+);
+
+public record ReturnPartRequest(
+    Guid PartRequestId,
+    string Reason,
+    string? Notes = null,
+    bool RequestNewPart = true
+);
+
+public record ReturnPartResultDto(
+    bool Success,
+    string Message,
+    Guid? NewPartRequestId = null,
+    string? ReturnShelf = null
+);
+
+public record CreateWorkOrderPartRequest(
+    string PartSku,
+    string PartName,
+    int RequestedQuantity = 1,
+    Guid? TargetWarehouseId = null
+);
+
+public record WorkOrderPartRequestDto(
+    Guid Id,
+    Guid WorkOrderId,
+    string PartSku,
+    string PartName,
+    int RequestedQuantity,
+    int AllocatedQuantity,
+    string? InternalSealedQr,
+    string Status,
+    Guid? PoLineId,
+    Guid? TargetWarehouseId
+);
+
+public record VanStockTransferRequest(
+    Guid SourceWarehouseId,
+    Guid TargetWarehouseId,
+    string PartSku,
+    string PartName,
+    int Quantity
+);
+
+public record VanStockTransferResultDto(
+    bool Success,
+    string Message,
+    string WaybillNumber,
+    Guid TransferId,
+    DateTimeOffset TransferredAt
+);
+

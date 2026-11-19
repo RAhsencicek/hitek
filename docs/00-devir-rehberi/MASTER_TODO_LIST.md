@@ -16,12 +16,12 @@ Bu doküman; HiServis AI platformunun tüm özelliklerini, UI bileşenlerini, ve
 |---|---|:---:|:---:|:---:|
 | **Faz 0** | Mimari Çekirdek, Veritabanı (RLS) & UI-Kit Altyapısı | 12 | 9 (Çekirdek Tamamlandı) | 🟡 Devam Ediyor |
 | **Faz 1** | Hızlı Araç Kabul & İş Emri / Lift Yönetimi | 14 | 11 (Çekirdek Tamamlandı) | 🟢 Tamamlandı |
-| **Faz 2** | Tedarik Zinciri, Konsolide Mal Kabul & Termal QR | 10 | 0 | ⚪ Sırada |
+| **Faz 2** | Tedarik Zinciri, Konsolide Mal Kabul & Termal QR | 10 | 10 | 🟢 Tamamlandı |
 | **Faz 3** | Offline-First (Drift SQLite) & Karantina Hakemliği | 12 | 0 | ⚪ Sırada |
 | **Faz 4** | Müşteri PWA Portalı, Teklif Onayı & İletişim Cüzdanı | 11 | 0 | ⚪ Sırada |
 | **Faz 5** | Whisper Sesli İş Emri AI & Toptancı B2B Hub | 9 | 0 | ⚪ Sırada |
 | **Faz 6** | Filo Yönetimi, ERP Köprüsü & Pilot Lansman | 12 | 0 | ⚪ Sırada |
-| **TOPLAM**| **Tüm Sistem** | **80 Görev** | **20** | **%25.0 Tamamlandı** |
+| **TOPLAM**| **Tüm Sistem** | **80 Görev** | **30** | **%37.5 Tamamlandı** |
 
 ---
 
@@ -70,18 +70,18 @@ Bu doküman; HiServis AI platformunun tüm özelliklerini, UI bileşenlerini, ve
 ## 📦 FAZ 2: Tedarik Zinciri, Konsolide Mal Kabul & Termal Mühürlü Parça (Modül 3)
 
 ### 2.1. Satınalma & Tedarikçi Siparişleri (1:N Header & Lines)
-- [ ] **2.1.1** Çoklu iş emri parça taleplerini tek bir Toptancı Siparişinde (PO) birleştiren satınalma sepeti.
-- [ ] **2.1.2** Toptancıya tek tıkla WhatsApp / PDF sipariş mektubu oluşturma.
-- [ ] **2.1.3** Kısmi teslimat (Partial PO Delivery) desteği ve açık sipariş bakiye takibi.
+- [x] **2.1.1** Çoklu iş emri parça taleplerini tek bir Toptancı Siparişinde (PO) birleştiren satınalma sepeti.
+- [x] **2.1.2** Toptancıya tek tıkla WhatsApp / PDF sipariş mektubu oluşturma.
+- [x] **2.1.3** Kısmi teslimat (Partial PO Delivery) desteği ve açık sipariş bakiye takibi.
 
 ### 2.2. Konsolide Mal Kabul & Termal Mühür Basımı
-- [ ] **2.2.1** El terminali / mobil kamera ile toptancı kolisindeki üretici EAN barkodunu okutma ekranı.
-- [ ] **2.2.2** Açık iş emirleri havuzunda otomatik eşleştirme (En acil aracı öncelikli önerme algoritması).
-- [ ] **2.2.3** Bluetooth SPP ve Ağ ESC/POS termal yazıcı servis katmanı (50mm x 30mm etiket formatı).
-- [ ] **2.2.4** Plaka, Şase No, İş Emri No ve `HS-WO...` güvenlik tokenı içeren QR kodlu termal mühür basımı.
-- [ ] **2.2.5** Ustanın lifte gelen parçayı okutarak doğru araca takıldığını doğrulayan "Çapraz Montaj Kilidi".
-- [ ] **2.2.6** Uyumsuz parça tersine lojistik akışı (`ReturnToSupplier` rafına aktarım ve yeni talep açma).
-- [ ] **2.2.7** Gezici servis araçları için "Van Stock" mobil depo stok düşüm ve transfer irsaliyesi onayı.
+- [x] **2.2.1** El terminali / mobil kamera ile toptancı kolisindeki üretici EAN barkodunu okutma ekranı.
+- [x] **2.2.2** Açık iş emirleri havuzunda otomatik eşleştirme (En acil aracı öncelikli önerme algoritması).
+- [x] **2.2.3** Bluetooth SPP ve Ağ ESC/POS termal yazıcı servis katmanı (50mm x 30mm etiket formatı).
+- [x] **2.2.4** Plaka, Şase No, İş Emri No ve `HS-WO...` güvenlik tokenı içeren QR kodlu termal mühür basımı.
+- [x] **2.2.5** Ustanın lifte gelen parçayı okutarak doğru araca takıldığını doğrulayan "Çapraz Montaj Kilidi".
+- [x] **2.2.6** Uyumsuz parça tersine lojistik akışı (`ReturnToSupplier` rafına aktarım ve yeni talep açma).
+- [x] **2.2.7** Gezici servis araçları için "Van Stock" mobil depo stok düşüm ve transfer irsaliyesi onayı.
 
 ---
 

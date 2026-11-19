@@ -16,6 +16,7 @@ builder.Services.AddScoped<PostgreSqlRlsInterceptor>();
 builder.Services.AddScoped<IPinAuthService, PinAuthService>();
 builder.Services.AddSingleton<ITsbVehicleCatalogService, TsbVehicleCatalogService>();
 builder.Services.AddScoped<IRegistrationCardOcrService, RegistrationCardOcrService>();
+builder.Services.AddSingleton<IEscPosLabelService, EscPosLabelService>();
 
 // 2. DbContext with PostgreSQL & RLS Interceptor
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -79,7 +80,7 @@ app.MapGet("/api/v1/health", (ITenantContext tenantContext) => Results.Ok(new
     tenantId = tenantContext.TenantId,
     branchId = tenantContext.BranchId,
     isTenantAdmin = tenantContext.IsTenantAdmin,
-    version = "1.1.0-faz1"
+    version = "1.2.0-faz2"
 }))
 .WithName("HealthCheck")
 .WithTags("System");
@@ -90,6 +91,8 @@ app.MapWorkOrderEndpoints();
 app.MapAssetEndpoints();
 app.MapBayEndpoints();
 app.MapOcrEndpoints();
+app.MapPurchaseOrderEndpoints();
+app.MapWarehouseEndpoints();
 
 app.Run();
 

@@ -5,10 +5,12 @@ import { ComponentShowcase } from "@/components/showcase/ComponentShowcase";
 import { HiVehicleIntakeForm } from "@/components/intake/HiVehicleIntakeForm";
 import { HiWorkshopKanban } from "@/components/kanban/HiWorkshopKanban";
 import { HiTechBoard } from "@/components/techboard/HiTechBoard";
-import { Car, Kanban, Wrench, Palette, Sparkles, MapPin } from "lucide-react";
+import { HiReceivingConsole } from "@/components/warehouse/HiReceivingConsole";
+import { HiProcurementPanel } from "@/components/procurement/HiProcurementPanel";
+import { Car, Kanban, Wrench, Palette, Sparkles, MapPin, Barcode, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type ActiveTab = "intake" | "kanban" | "techboard" | "showcase";
+type ActiveTab = "intake" | "kanban" | "techboard" | "receiving" | "procurement" | "showcase";
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("intake");
@@ -33,6 +35,18 @@ export default function HomePage() {
       tag: "Ekran 2",
     },
     {
+      id: "receiving" as const,
+      label: "Mal Kabul & Mühür",
+      icon: Barcode,
+      tag: "Modül 3",
+    },
+    {
+      id: "procurement" as const,
+      label: "Satınalma & Tedarik",
+      icon: ShoppingCart,
+      tag: "Modül 3",
+    },
+    {
       id: "showcase" as const,
       label: "UI-Kit Vitrini",
       icon: Palette,
@@ -55,8 +69,8 @@ export default function HomePage() {
                 <span className="font-black text-lg tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                   HiServis AI
                 </span>
-                <span className="hidden sm:inline-block ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                  FAZ 1 CANLI
+                <span className="hidden sm:inline-block ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                  FAZ 2 CANLI
                 </span>
               </div>
             </div>
@@ -111,6 +125,10 @@ export default function HomePage() {
             <HiTechBoard />
           </div>
         )}
+
+        {activeTab === "receiving" && <HiReceivingConsole />}
+
+        {activeTab === "procurement" && <HiProcurementPanel />}
 
         {activeTab === "showcase" && <ComponentShowcase />}
       </main>

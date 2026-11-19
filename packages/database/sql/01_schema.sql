@@ -168,7 +168,8 @@ CREATE TABLE IF NOT EXISTS WorkOrderPartRequests (
     AllocatedQuantity INT NOT NULL DEFAULT 0,
     InternalSealedQr VARCHAR(100), -- Sealed Plate+VIN+WO Security QR
     Status VARCHAR(30) NOT NULL DEFAULT 'Pending', -- Pending, Ordered, Allocated, Installed, Returned
-    TargetWarehouseId UUID REFERENCES Warehouses(Id)
+    TargetWarehouseId UUID REFERENCES Warehouses(Id),
+    CreatedAt TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
 );
 
 -- 5. QUARANTINE & DISPUTE REVIEW (OFFLINE CONFLICT RESOLUTION)
