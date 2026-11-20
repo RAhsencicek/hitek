@@ -17,7 +17,7 @@ const SectorContext = createContext<SectorContextValue | undefined>(undefined);
 const STORAGE_KEY = "hiservis_active_sector_v1";
 
 export const SectorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [sector, setSectorState] = useState<SectorId>("automotive");
+  const [sector, setSectorState] = useState<SectorId>("micromobility");
   const [isDemoMode, setIsDemoMode] = useState<boolean>(true);
   const [isMounted, setIsMounted] = useState<boolean>(false);
 

@@ -63,9 +63,9 @@ describe("HiSectorSwitcher & Çok Sektörlü Dinamik Şablon Mimarisi", () => {
       </SectorProvider>
     );
 
-    // Initial default is automotive
-    expect(screen.getByTestId("current-sector").textContent).toBe("automotive");
-    expect(screen.getByText("Oto Servis")).toBeInTheDocument();
+    // Initial default is micromobility (Ahmet Usta öncelikli saha satışı)
+    expect(screen.getByTestId("current-sector").textContent).toBe("micromobility");
+    expect(screen.getByText("Moto & Scooter")).toBeInTheDocument();
 
     // Click dropdown toggle
     const toggleBtn = screen.getByText("SEKTÖR DEĞİŞTİR");

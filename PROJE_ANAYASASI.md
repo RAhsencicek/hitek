@@ -3,7 +3,7 @@
 **Sürüm:** 1.2 (Multi-Industry Agnostic Architecture & Production-Ready)  
 **Tarih:** 19 Kasım 2026  
 **Roller:** Lead Architect & CPO (Kurucu Ortaklar)  
-**Hedef Sektör:** Genel Endüstriyel Servis & Saha Yönetimi (Oto Servis, Asansör & Yürüyen Merdiven, Jeneratör & Kompresör, İklimlendirme/HVAC, Endüstriyel Makine)  
+**Hedef Sektör:** 1. Ticari Pilot & Satış Önceliği: Motosiklet & E-Scooter (Mikromobilite) | Çok Sektörlü Agnostik Genişleme (Oto Servis, Asansör & Yürüyen Merdiven, Jeneratör & Kompresör, İklimlendirme/HVAC, Endüstriyel Makine)  
 **Teknoloji Yığını:** .NET 10 Web API + PostgreSQL 18 + Flutter (Drift SQLite) + Next.js 15 + Python 3.12 (LangGraph / FastAPI)
 
 ---
@@ -17,7 +17,8 @@ HiServis AI; Türkiye ve küresel pazardaki statik formlu, internet kesildiğind
 2. **Sahada Sıfır Kesinti (Offline-First Guarantee):** Bodrum katındaki asansör kuyusunda, yer altı otoparkındaki lifte veya kırsaldaki jeneratör kabininde teknisyen hiçbir engele takılmaz; yerel SQLite üzerinde iş emri açar, parça düşer, ses kaydeder ve müşteri imzası alır.
 3. **Sessiz Karantina (Silent Quarantine over Silent Overwrite):** Çevrimdışı ve çevrimiçi durum çakışmalarında sistem asla "Son Yazılan Kazanır" körlüğüyle veriyi ezmez. Veri karantinaya alınır ve servis müdürünün onayına sunulur.
 4. **Birim Ekonomi Disiplini (Margin Protection):** WhatsApp Business API gibi döviz bazlı dış bağımlılıklar, Sihirli Link (PWA Web Takip) ve Cüzdan modeli ile korunur; yazılım sattıkça zarar etmez.
-5. **Agnostik Endüstriyel Çekirdek & Çok Sektörlü Dinamik Şablon Motoru:** Veritabanı ve API seviyesinde hiçbir veri modeli tek bir sektöre (örn. sadece binek otomobile) kilitlenmez. Varlık (`Asset`), Birincil Kimlik (`primary_identifier`), İkincil Kimlik (`secondary_identifier`) ve Dinamik Nitelikler (`dynamic_attributes JSONB`) üzerine kurulu jenerik motor; Oto Servis, Asansör, Jeneratör, HVAC ve Fabrika Makinesi gibi tüm endüstriyel dikey sektörlerin kabul, metrik, form ve muayene ihtiyaçlarını tek bir kod tabanıyla karşılar. Otomotiv ilk pilot dikeyimizdir; platform tüm endüstriyel servis sahasına anında uyarlanabilir.
+5. **Agnostik Endüstriyel Çekirdek & Çok Sektörlü Dinamik Şablon Motoru:** Veritabanı ve API seviyesinde hiçbir veri modeli tek bir sektöre (örn. sadece binek otomobile) kilitlenmez. Varlık (`Asset`), Birincil Kimlik (`primary_identifier`), İkincil Kimlik (`secondary_identifier`) ve Dinamik Nitelikler (`dynamic_attributes JSONB`) üzerine kurulu jenerik motor; Motosiklet, Oto Servis, Asansör, Jeneratör, HVAC ve Fabrika Makinesi gibi tüm endüstriyel dikey sektörlerin kabul, metrik, form ve muayene ihtiyaçlarını tek bir kod tabanıyla karşılar.
+6. **İlk Ticari Gelir ve Müşteri Önceliği (First Commercial Revenue Focus):** Sistemin çekirdek mimarisi çok sektörlü esnekliğini korurken; ilk saha satışı, canlı nakit akışı ve MVP ticarileşme odağı **Motosiklet ve E-Scooter (Mikromobilite)** servis işletmeleridir. Tüm varsayılan ayarlar, hazır tohum parçalar (`MICROMOBILITY_PARTS_SEED`), 2D güvenlik kontrolleri (10 Moto + 8 Scooter Hayati Kontrolü), bağımsız teknisyen tableti (`/tech`) ve demo senaryoları bu acil müşteri satışını garantiye alacak şekilde önceliklendirilir.
 
 ---
 
@@ -28,8 +29,8 @@ HiServis AI; Türkiye ve küresel pazardaki statik formlu, internet kesildiğind
 | Rol | Platform | Temel Sorumluluk | Kritik Yetkiler |
 |---|---|---|---|
 | **Servis Sahibi (Patron)** | Web / Mobil | Şirket kârlılığı, ciro, şube denetimi | Tüm şubeler, finansal raporlar, cüzdan yükleme |
-| **Servis Müdürü / Danışmanı** | Web (Next.js) | Araç kabul, teklif, iş emri koordinasyonu, faturalama | Karantina çözümü, teklif onaylama, ERP aktarımı |
-| **Saha / Atölye Teknisyeni** | Mobil (Flutter) | Arıza tespiti, parça sarfı, montaj, sesli iş emri | İş emri başlatma/tamamlama, yerel parça düşümü |
+| **Servis Müdürü / Danışmanı** | Web (Next.js - `/portal`) | Hızlı kabul, teklif, iş emri koordinasyonu, faturalama | Karantina çözümü, teklif onaylama, ERP aktarımı |
+| **Saha / Atölye Teknisyeni** | Tablet / Mobil (`/tech`) | 4 Haneli PIN pad (`1234`), İşe başlama/bitirme, mühürlü parça talebi | İşe başla/bitir kronometresi, parça eşleme, sıfır finans verisi |
 | **Depo / Satınalma Sorumlusu** | Mobil / Web | Toptancı mal kabulü, iç QR basımı, stok transferi | PO oluşturma, barkod eşleştirme, van-stock transferi |
 | **Ön Muhasebe** | Web (Next.js) | Fatura kesimi, tahsilat, cari mutabakatı | ERP faturası basma, kasa/POS kapama, açık hesap takibi |
 | **Araç Sahibi (Müşteri)** | PWA (Sihirli Link) | Canlı durum takibi, ek parça onayı, ödeme | Teklif onay/red, fotoğraf görüntüleme, sanal POS |
@@ -38,10 +39,11 @@ HiServis AI; Türkiye ve küresel pazardaki statik formlu, internet kesildiğind
 
 ### 2.2 Çok Sektörlü Agnostik Varlık Matrisi (Multi-Industry Sector Matrix)
 
-HiServis AI çekirdek veri modeli, sektörden bağımsız olarak şu 5 dikey sektörel arketipi dinamik şablonlarla (Sector Presets) tam destekler:
+HiServis AI çekirdek veri modeli, sektörden bağımsız olarak şu dikey sektörel arketipleri dinamik şablonlarla (Sector Presets) tam destekler:
 
 | Dikey Sektör | Birincil Kimlik (`PrimaryIdentifier`) | İkincil Kimlik (`SecondaryIdentifier`) | Sayaç / Metrik (`CurrentMeter` & Dynamic) | Muayene / Kontrol (DVI Formatı) | Örnek Parça / Mühür |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| ⚡ **Motosiklet & E-Scooter (1. Ticari Satış Odağı)** | Plaka (34 MTO 99) veya Şasi / Gövde No | Batarya / BMS Seri No | KM veya Batarya Şarj Döngüsü | 10 Nokta Moto & 8 Nokta Scooter Hayati Güvenlik DVI | Bando Varyatör Kayışı, Motul 10W-40, Petek Dolgu Lastik |
 | **Oto Servis & Filo Bakım** | Araç Plakası (34 ABC 123) | Şase No (VIN) | Kilometre (km) | 2D Görsel Kaporta Hasar & Mekanik DVI | Bosch Fren Balatası, Yağ Filtresi |
 | **Asansör & Yürüyen Merdiven** | Bakanlık Kimlik / UAVT No | Seri No / Ruhsat No | Seyir Sayısı / Kat Adedi / Aylık Bakım | A-Tipi Muayene (Kırmızı/Sarı/Yeşil Etiket) | Halat Klemensi, Paraşüt Fren Bloğu |
 | **Jeneratör & Kompresör** | Şasi / Kabin Seri No | Motor / Alternatör No | Çalışma Saati (Hourmeter) & kWh | Akü Voltajı, Yağ Basıncı, Yük Testi | Marş Motoru, AVR Kartı, Mazot Filtresi |

@@ -132,6 +132,15 @@ export const HiVehicleIntakeForm: React.FC = () => {
   // Success / Receipt Modal
   const [isReceiptOpen, setIsReceiptOpen] = useState<boolean>(false);
   const [createdWoNumber, setCreatedWoNumber] = useState<string>("WO-2026-10493");
+  const [micromobilityMode, setMicromobilityMode] = useState<"motorcycle" | "scooter">("motorcycle");
+
+  const handleQuickExpressPackage = () => {
+    setComplaint("⚡ 15 Dk Kurye Ekspres Bakımı: 1L Castrol 10W-40 Motor Yağı + Buji Temizliği + Lastik Hava Basıncı Tamamlama + Fren Boşluk Ayarı");
+    setPriority("Waiter");
+    if (config.bayStations.some((b) => b.id === "MOTO-LIFT-2")) {
+      setSelectedBay("MOTO-LIFT-2");
+    }
+  };
 
   // Presets for rapid demo testing
   const handleSelectPreset = (presetPlate: string) => {
@@ -329,6 +338,62 @@ export const HiVehicleIntakeForm: React.FC = () => {
               </span>
             )}
           </div>
+
+          {/* Motosiklet vs E-Scooter Özel Seçici (Mikromobilite Sektörü İçin) */}
+          {sector === "micromobility" && (
+            <div className="flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setMicromobilityMode("motorcycle");
+                  setPlate("34 MTO 99");
+                  setBrand("Honda");
+                  setModel("PCX 125");
+                  setModelYear(2022);
+                  setVin("MH3SE8610NJ109281");
+                  setTsbCode("MOTO-125-PCX");
+                  setMeter(18400);
+                  setCustomerName("Mert Yılmaz");
+                  setCustomerPhone("0532 999 8877");
+                  setComplaint("Varyatörden ses geliyor, kalkışta titriyor ve arka fren ötüyor.");
+                  setIsRecognized(true);
+                }}
+                className={cn(
+                  "flex-1 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5",
+                  micromobilityMode === "motorcycle"
+                    ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm font-extrabold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+                )}
+              >
+                <span>🛵 Motosiklet (Plakalı)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMicromobilityMode("scooter");
+                  setPlate("SC-8812-TR");
+                  setBrand("Xiaomi");
+                  setModel("Mi Electric Scooter Pro 2");
+                  setModelYear(2023);
+                  setVin("BAT-XIA-12800MAH");
+                  setTsbCode("ESC-36V-350W");
+                  setMeter(2150);
+                  setCustomerName("Caner Aydın");
+                  setCustomerPhone("0542 666 5544");
+                  setComplaint("Katlama boynunda boşluk var, batarya doluyken yokuşta aniden kapanıyor.");
+                  setIsRecognized(true);
+                }}
+                className={cn(
+                  "flex-1 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5",
+                  micromobilityMode === "scooter"
+                    ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm font-extrabold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+                )}
+              >
+                <span>🛴 E-Scooter / E-Bike (Plakasız - Şasi/Karekod)</span>
+              </button>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
             {/* Plaka / Kimlik Giriş & Rozet Alanı */}
@@ -636,13 +701,101 @@ export const HiVehicleIntakeForm: React.FC = () => {
           </div>
         </div>
 
-        {/* ADIM 3: 2D Kaporta Hasar Şeması veya Sektörel DVI Muayenesi */}
+        {/* ADIM 3: 2D Hasar Şeması veya Sektörel DVI Muayenesi */}
         {sector === "automotive" ? (
           <div className="space-y-2">
             <HiDamageInspection
               markers={damageMarkers}
               onChange={setDamageMarkers}
             />
+          </div>
+        ) : sector === "micromobility" ? (
+          <div className="space-y-4">
+            {/* 2D Motosiklet / E-Scooter Dokunmatik Hasar Şeması */}
+            <HiDamageInspection
+              markers={damageMarkers}
+              onChange={setDamageMarkers}
+            />
+
+            {/* 10 Nokta Motosiklet & 8 Nokta E-Scooter Hayati Güvenlik DVI Muayenesi */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
+                    DVI
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-base text-slate-900 dark:text-slate-100">
+                      {config.inspectionTitle}
+                    </h2>
+                    <p className="text-xs text-slate-500">
+                      Hayati güvenlik, fren balatası, varyatör kayışı ve batarya/BMS kontrol listesi
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {config.inspectionItems.map((item) => {
+                  const currentStatus = industrialInspection[item.id] || "pass";
+
+                  return (
+                    <div
+                      key={item.id}
+                      className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/40 space-y-2"
+                    >
+                      <div>
+                        <div className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                          {item.label}
+                        </div>
+                        <div className="text-[11px] text-slate-500 mt-0.5">
+                          {item.description}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-1.5 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => setIndustrialInspection((prev) => ({ ...prev, [item.id]: "pass" }))}
+                          className={cn(
+                            "py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-center",
+                            currentStatus === "pass"
+                              ? "bg-emerald-600 text-white shadow-xs"
+                              : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-emerald-50"
+                          )}
+                        >
+                          🟢 Sorunsuz
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIndustrialInspection((prev) => ({ ...prev, [item.id]: "attention" }))}
+                          className={cn(
+                            "py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-center",
+                            currentStatus === "attention"
+                              ? "bg-amber-500 text-white shadow-xs"
+                              : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-amber-50"
+                          )}
+                        >
+                          🟡 Takip Et
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIndustrialInspection((prev) => ({ ...prev, [item.id]: "fail" }))}
+                          className={cn(
+                            "py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-center",
+                            currentStatus === "fail"
+                              ? "bg-red-600 text-white shadow-xs"
+                              : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-red-50"
+                          )}
+                        >
+                          🔴 Arızalı / Acil
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         ) : (
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
@@ -735,6 +888,28 @@ export const HiVehicleIntakeForm: React.FC = () => {
               Müşteri Şikayeti, Öncelik &amp; İstasyon Sevk
             </h2>
           </div>
+
+          {/* Kurye & Mikromobilite 15 Dk Ekspres Bakım Paketi */}
+          {sector === "micromobility" && (
+            <div className="p-3.5 rounded-xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border border-amber-300 dark:border-amber-700/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5 text-xs font-black text-amber-900 dark:text-amber-200 uppercase tracking-wide">
+                  <span>⚡ Kurye &amp; Ekspres Hızlı Servis</span>
+                  <span className="px-1.5 py-0.5 text-[10px] rounded bg-amber-500 text-white font-bold">15 Dk</span>
+                </div>
+                <p className="text-[11px] text-amber-800/80 dark:text-amber-300/80">
+                  1L Motul/Castrol 10W-40 Yağ + Buji + Lastik Hava Basıncı (29/33 PSI) + Fren Boşluk Ayarı tek tıkla pakettir.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleQuickExpressPackage}
+                className="shrink-0 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-xs shadow-sm active:scale-95 transition-all flex items-center gap-1.5"
+              >
+                <span>⚡ 15 Dk Kurye Ekspres Bakımı Ekle</span>
+              </button>
+            </div>
+          )}
 
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">

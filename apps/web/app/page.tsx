@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { HiVehicleIntakeForm } from "@/components/intake/HiVehicleIntakeForm";
 import { HiWorkshopKanban } from "@/components/kanban/HiWorkshopKanban";
 import { HiTechBoard } from "@/components/techboard/HiTechBoard";
@@ -106,15 +107,23 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Sağ: Canlı Sistem ve Donanım Durumu (Masaüstü) */}
-            <div className="hidden md:flex items-center gap-3 shrink-0 text-xs">
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+            {/* Sağ: Atölye Tablet Modu & Canlı Sistem Durumu */}
+            <div className="flex items-center gap-2.5 shrink-0 text-xs">
+              <Link
+                href="/tech"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-300 dark:border-amber-700 font-bold text-xs transition-colors shadow-xs"
+              >
+                <Wrench className="w-3.5 h-3.5" />
+                <span>📱 Atölye Tableti (/tech)</span>
+              </Link>
+
+              <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="font-semibold text-[11px]">Sistem Çevrimiçi</span>
               </div>
-              <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 text-blue-700 dark:text-blue-300 text-[11px] font-semibold">
+              <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 text-blue-700 dark:text-blue-300 text-[11px] font-semibold">
                 <Printer className="w-3.5 h-3.5" />
-                <span>Termal Yazıcı: Hazır</span>
+                <span>Termal: Hazır</span>
               </div>
             </div>
           </div>

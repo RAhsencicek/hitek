@@ -75,6 +75,7 @@ Projeye yeni katılan bir ekip üyesinin belgeleri şu sırayla okuması zorunlu
 * [KIMLIK_OTURUM_VE_YETKI_MATRISI.md](01-mimari-ve-altyapi/KIMLIK_OTURUM_VE_YETKI_MATRISI.md): Çok şubeli RBAC rolleri, JWT ve teknisyenler için 4 haneli PIN pad oturum açma akışı.
 
 ### 2. [02-oto-servis-ve-operasyon](02-oto-servis-ve-operasyon/) — Saha ve Atölye Sözleşmeleri
+* [MOTOSIKLET_VE_ESCOOTER_SERVIS_SOZLESMESI.md](02-oto-servis-ve-operasyon/MOTOSIKLET_VE_ESCOOTER_SERVIS_SOZLESMESI.md): **[1. Ticari Satış Şartnamesi]** Motosiklet ve E-Scooter servisi için 10+8 DVI muayenesi, 2D dokunmatik şema, hazır parça kataloğu ve bağımsız teknisyen tableti (`/tech`).
 * [MOBIL_VE_WEB_EKRAN_TASARIMLARI.md](02-oto-servis-ve-operasyon/MOBIL_VE_WEB_EKRAN_TASARIMLARI.md): **[Ekran Tel Çerçeveleri]** Lift Kanban, Teknisyen Tech Board, Mobil DVI Muayene, Müşteri PWA Portalı ve Filo Paneli wireframe'leri.
 * [ARAC_KABUL_VE_EKSPERTIZ_SOZLESMESI.md](02-oto-servis-ve-operasyon/ARAC_KABUL_VE_EKSPERTIZ_SOZLESMESI.md): 2D Araç silueti hasar işaretleme, kilometre artış projeksiyonu ve dijital kabul fişi.
 * [KAPALI_DEVRE_PARCA_IZLENEBILIRLIGI.md](02-oto-servis-ve-operasyon/KAPALI_DEVRE_PARCA_IZLENEBILIRLIGI.md): Parçanın depoya girişinden araç liftten inene kadarki kapalı devre mühürleme döngüsü.

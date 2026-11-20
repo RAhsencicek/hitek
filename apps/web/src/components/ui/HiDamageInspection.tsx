@@ -55,7 +55,7 @@ export const HiDamageInspection: React.FC<HiDamageInspectionProps> = ({
   className,
 }) => {
   const [selectedType, setSelectedType] = useState<DamageType>("scratch");
-  const [selectedVehicleType, setSelectedVehicleType] = useState<"sedan" | "hatchback" | "suv">("sedan");
+  const [selectedVehicleType, setSelectedVehicleType] = useState<"motorcycle" | "scooter" | "sedan" | "hatchback" | "suv">("motorcycle");
   const [pendingMarker, setPendingMarker] = useState<Omit<DamageMarker, "id"> | null>(null);
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [photoNote, setPhotoNote] = useState("");
@@ -64,6 +64,34 @@ export const HiDamageInspection: React.FC<HiDamageInspectionProps> = ({
 
   // Helper to resolve zone name from coordinate percentage
   const getZoneFromCoordinates = (x: number, y: number): { zone: string; zoneName: string } => {
+    if (selectedVehicleType === "motorcycle") {
+      if (y < 22) return { zone: "FRONT_FORK", zoneName: "Ön Çamurluk & Amortisör Maşası" };
+      if (y < 38) {
+        if (x < 35) return { zone: "FAIRING_LEFT", zoneName: "Sol Yan Ayna & Manet" };
+        if (x > 65) return { zone: "FAIRING_RIGHT", zoneName: "Sağ Yan Ayna & Manet" };
+        return { zone: "HANDLEBAR", zoneName: "Gidon & Gösterge Paneli" };
+      }
+      if (y < 65) {
+        if (x < 35) return { zone: "FAIRING_LEFT", zoneName: "Sol Yan Grenaj & Koruma Demiri" };
+        if (x > 65) return { zone: "FAIRING_RIGHT", zoneName: "Sağ Yan Grenaj & Egzoz" };
+        return { zone: "SEAT_TANK", zoneName: "Sele & Yakıt Deposu" };
+      }
+      if (y < 85) {
+        if (x > 60) return { zone: "EXHAUST_SWINGARM", zoneName: "Egzoz & Arka Salıncak" };
+        return { zone: "EXHAUST_SWINGARM", zoneName: "Zincir / Kayış & Arka Maşa" };
+      }
+      return { zone: "TAIL_LIGHT", zoneName: "Arka Çamurluk, Stop & Plakalık" };
+    }
+
+    if (selectedVehicleType === "scooter") {
+      if (y < 20) return { zone: "STEM_DISPLAY", zoneName: "Gidon, Gaz Kolu & Ekran" };
+      if (y < 38) return { zone: "FOLDING_JOINT", zoneName: "Katlama Boynu & Kilit Pimi" };
+      if (y < 75) return { zone: "DECK_BATTERY", zoneName: "Basamak Gövdesi & Batarya Haznesi" };
+      if (y < 90) return { zone: "HUB_MOTOR", zoneName: "Arka Motor Tekerlek & Fren Diski" };
+      return { zone: "REAR_FENDER", zoneName: "Arka Çamurluk & Fren Stop Lambası" };
+    }
+
+    // Default: Automobile zones
     if (y < 18) return { zone: "FrontBumper", zoneName: "Ön Tampon" };
     if (y < 35) {
       if (x < 30) return { zone: "FrontLeftFender", zoneName: "Sol Ön Çamurluk" };
@@ -163,20 +191,26 @@ export const HiDamageInspection: React.FC<HiDamageInspectionProps> = ({
         </div>
 
         {/* Siluet Tipi Seçici */}
-        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg text-xs self-start md:self-auto">
-          {(["sedan", "hatchback", "suv"] as const).map((type) => (
+        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg text-xs self-start md:self-auto overflow-x-auto no-scrollbar">
+          {[
+            { id: "motorcycle", label: "🛵 Motosiklet" },
+            { id: "scooter", label: "🛴 E-Scooter" },
+            { id: "sedan", label: "🚗 Sedan" },
+            { id: "hatchback", label: "Hatchback" },
+            { id: "suv", label: "SUV" },
+          ].map(({ id, label }) => (
             <button
-              key={type}
+              key={id}
               type="button"
-              onClick={() => setSelectedVehicleType(type)}
+              onClick={() => setSelectedVehicleType(id as any)}
               className={cn(
-                "px-2.5 py-1 rounded-md font-medium capitalize transition-all",
-                selectedVehicleType === type
-                  ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm"
+                "px-2.5 py-1 rounded-md font-medium transition-all whitespace-nowrap",
+                selectedVehicleType === id
+                  ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm font-bold"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
               )}
             >
-              {type}
+              {label}
             </button>
           ))}
         </div>
@@ -241,77 +275,144 @@ export const HiDamageInspection: React.FC<HiDamageInspectionProps> = ({
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            {/* Araç Dış Gövde Çerçevesi */}
-            <path
-              d="M 80 40 
-                 C 100 25, 180 25, 200 40 
-                 C 220 55, 235 90, 235 150 
-                 C 235 240, 235 340, 235 410 
-                 C 235 440, 210 460, 190 465 
-                 C 160 470, 120 470, 90 465 
-                 C 70 460, 45 440, 45 410 
-                 C 45 340, 45 240, 45 150 
-                 C 45 90, 60 55, 80 40 Z"
-              className="fill-slate-100 dark:fill-slate-800 stroke-slate-400 dark:stroke-slate-600"
-              strokeWidth="3"
-            />
+            {selectedVehicleType === "motorcycle" && (
+              <g id="motorcycle-blueprint">
+                {/* Ön Tekerlek */}
+                <rect x="130" y="30" width="20" height="75" rx="8" className="fill-slate-800 dark:fill-slate-900 stroke-slate-600" strokeWidth="2" />
+                {/* Ön Maşa & Çamurluk */}
+                <path d="M 120 70 L 120 115 L 160 115 L 160 70" className="stroke-slate-400 dark:stroke-slate-500" strokeWidth="4" />
+                <path d="M 122 80 C 130 65, 150 65, 158 80 L 158 115 L 122 115 Z" className="fill-slate-200 dark:fill-slate-700 stroke-slate-400" strokeWidth="1.5" />
+                {/* Gidon Bar & Manetler */}
+                <path d="M 65 130 L 215 130" className="stroke-slate-700 dark:stroke-slate-300" strokeWidth="6" strokeLinecap="round" />
+                <rect x="55" y="123" width="25" height="14" rx="3" className="fill-slate-900 stroke-slate-600" />
+                <rect x="200" y="123" width="25" height="14" rx="3" className="fill-slate-900 stroke-slate-600" />
+                {/* Aynalar */}
+                <circle cx="50" cy="110" r="10" className="fill-sky-100 dark:fill-sky-900 stroke-slate-400" strokeWidth="1.5" />
+                <circle cx="230" cy="110" r="10" className="fill-sky-100 dark:fill-sky-900 stroke-slate-400" strokeWidth="1.5" />
+                {/* Gösterge Paneli */}
+                <rect x="120" y="118" width="40" height="24" rx="4" className="fill-slate-900 stroke-blue-500" strokeWidth="1.5" />
+                {/* Yakıt Deposu / Ön Gövde */}
+                <path d="M 110 145 C 95 180, 95 230, 110 250 L 170 250 C 185 230, 185 180, 170 145 Z" className="fill-slate-200 dark:fill-slate-800 stroke-slate-400 dark:stroke-slate-600" strokeWidth="2" />
+                {/* Sol & Sağ Yan Grenajlar */}
+                <path d="M 95 170 C 70 180, 65 240, 95 260 Z" className="fill-slate-300/70 dark:fill-slate-700/70 stroke-slate-400" strokeWidth="1.5" />
+                <path d="M 185 170 C 210 180, 215 240, 185 260 Z" className="fill-slate-300/70 dark:fill-slate-700/70 stroke-slate-400" strokeWidth="1.5" />
+                {/* Sele (Koltuk) */}
+                <path d="M 110 255 C 105 285, 105 320, 115 345 L 165 345 C 175 320, 175 285, 170 255 Z" className="fill-slate-800 dark:fill-slate-950 stroke-slate-600" strokeWidth="2" />
+                {/* Egzoz Borusu (Sağ Taraf) */}
+                <rect x="185" y="320" width="22" height="95" rx="6" className="fill-slate-400 dark:fill-slate-600 stroke-slate-500" strokeWidth="2" />
+                {/* Arka Maşa & Zincir/Kayış Muhafazası */}
+                <path d="M 115 345 L 115 420 L 165 420 L 165 345" className="stroke-slate-500 dark:stroke-slate-600" strokeWidth="4" />
+                {/* Arka Tekerlek */}
+                <rect x="128" y="375" width="24" height="80" rx="8" className="fill-slate-800 dark:fill-slate-900 stroke-slate-600" strokeWidth="2" />
+                {/* Arka Çamurluk & Stop Lambası */}
+                <path d="M 120 440 L 160 440 L 150 468 L 130 468 Z" className="fill-red-600/80 stroke-red-500" strokeWidth="1.5" />
+              </g>
+            )}
 
-            {/* Ön Tampon Hattı */}
-            <path
-              d="M 60 70 C 100 50, 180 50, 220 70"
-              className="stroke-slate-400 dark:stroke-slate-600"
-              strokeWidth="2"
-              strokeDasharray="4 4"
-            />
+            {selectedVehicleType === "scooter" && (
+              <g id="scooter-blueprint">
+                {/* Gidon & Ekran */}
+                <path d="M 75 40 L 205 40" className="stroke-slate-700 dark:stroke-slate-300" strokeWidth="6" strokeLinecap="round" />
+                <rect x="65" y="33" width="25" height="14" rx="3" className="fill-slate-900 stroke-slate-600" />
+                <rect x="190" y="33" width="25" height="14" rx="3" className="fill-slate-900 stroke-slate-600" />
+                {/* Ortadaki Dijital Ekran */}
+                <rect x="125" y="28" width="30" height="24" rx="4" className="fill-slate-950 stroke-emerald-500" strokeWidth="1.5" />
+                {/* Katlama Direği / Boyun */}
+                <line x1="140" y1="52" x2="140" y2="120" className="stroke-slate-500 dark:stroke-slate-400" strokeWidth="8" strokeLinecap="round" />
+                {/* Katlama Mekanizması / Kilit Mandalı */}
+                <rect x="128" y="115" width="24" height="20" rx="4" className="fill-amber-500/80 stroke-amber-600" strokeWidth="2" />
+                {/* Ön Tekerlek Maşası & Tekerlek */}
+                <rect x="132" y="90" width="16" height="55" rx="6" className="fill-slate-800 dark:fill-slate-900 stroke-slate-600" strokeWidth="2" />
+                {/* Basamak / Batarya Haznesi (Deck) */}
+                <rect x="105" y="160" width="70" height="200" rx="16" className="fill-slate-200 dark:fill-slate-800 stroke-slate-400 dark:stroke-slate-600" strokeWidth="2.5" />
+                {/* Kaydırmaz Zımpara Deseni */}
+                <rect x="115" y="175" width="50" height="170" rx="8" className="fill-slate-300/60 dark:fill-slate-700/60 stroke-slate-400/40" strokeDasharray="3 3" />
+                {/* Batarya Şarj Giriş Kapağı */}
+                <circle cx="160" cy="180" r="4" className="fill-red-500 stroke-red-700" />
+                {/* Arka Çamurluk & Ayak Freni */}
+                <path d="M 125 360 C 120 390, 120 420, 130 435 L 150 435 C 160 420, 160 390, 155 360 Z" className="fill-slate-300 dark:fill-slate-700 stroke-slate-500" strokeWidth="2" />
+                {/* Arka Stop Lambası */}
+                <rect x="133" y="425" width="14" height="8" rx="2" className="fill-red-600" />
+                {/* Arka Tekerlek & Fren Diski */}
+                <rect x="132" y="390" width="16" height="60" rx="6" className="fill-slate-800 dark:fill-slate-900 stroke-slate-600" strokeWidth="2" />
+              </g>
+            )}
 
-            {/* Motor Kaputu */}
-            <path
-              d="M 70 85 C 90 75, 190 75, 210 85 L 205 160 C 180 155, 100 155, 75 160 Z"
-              className="fill-slate-200/50 dark:fill-slate-700/50 stroke-slate-400 dark:stroke-slate-600"
-              strokeWidth="1.5"
-            />
+            {["sedan", "hatchback", "suv"].includes(selectedVehicleType) && (
+              <g id="car-blueprint">
+                {/* Araç Dış Gövde Çerçevesi */}
+                <path
+                  d="M 80 40 
+                     C 100 25, 180 25, 200 40 
+                     C 220 55, 235 90, 235 150 
+                     C 235 240, 235 340, 235 410 
+                     C 235 440, 210 460, 190 465 
+                     C 160 470, 120 470, 90 465 
+                     C 70 460, 45 440, 45 410 
+                     C 45 340, 45 240, 45 150 
+                     C 45 90, 60 55, 80 40 Z"
+                  className="fill-slate-100 dark:fill-slate-800 stroke-slate-400 dark:stroke-slate-600"
+                  strokeWidth="3"
+                />
 
-            {/* Ön Cam */}
-            <path
-              d="M 75 165 C 100 160, 180 160, 205 165 L 195 210 C 175 205, 105 205, 85 210 Z"
-              className="fill-sky-100/70 dark:fill-sky-950/70 stroke-sky-400 dark:stroke-sky-600"
-              strokeWidth="1.5"
-            />
+                {/* Ön Tampon Hattı */}
+                <path
+                  d="M 60 70 C 100 50, 180 50, 220 70"
+                  className="stroke-slate-400 dark:stroke-slate-600"
+                  strokeWidth="2"
+                  strokeDasharray="4 4"
+                />
 
-            {/* Tavan (Roof) */}
-            <rect
-              x="85"
-              y="215"
-              width="110"
-              height="105"
-              rx="8"
-              className="fill-slate-200/40 dark:fill-slate-700/40 stroke-slate-400 dark:stroke-slate-600"
-              strokeWidth="1.5"
-            />
+                {/* Motor Kaputu */}
+                <path
+                  d="M 70 85 C 90 75, 190 75, 210 85 L 205 160 C 180 155, 100 155, 75 160 Z"
+                  className="fill-slate-200/50 dark:fill-slate-700/50 stroke-slate-400 dark:stroke-slate-600"
+                  strokeWidth="1.5"
+                />
 
-            {/* Arka Cam */}
-            <path
-              d="M 85 325 C 105 328, 175 328, 195 325 L 205 365 C 180 370, 100 370, 75 365 Z"
-              className="fill-sky-100/70 dark:fill-sky-950/70 stroke-sky-400 dark:stroke-sky-600"
-              strokeWidth="1.5"
-            />
+                {/* Ön Cam */}
+                <path
+                  d="M 75 165 C 100 160, 180 160, 205 165 L 195 210 C 175 205, 105 205, 85 210 Z"
+                  className="fill-sky-100/70 dark:fill-sky-950/70 stroke-sky-400 dark:stroke-sky-600"
+                  strokeWidth="1.5"
+                />
 
-            {/* Bagaj Kapağı */}
-            <path
-              d="M 75 370 C 100 375, 180 375, 205 370 L 200 430 C 180 435, 100 435, 80 430 Z"
-              className="fill-slate-200/50 dark:fill-slate-700/50 stroke-slate-400 dark:stroke-slate-600"
-              strokeWidth="1.5"
-            />
+                {/* Tavan (Roof) */}
+                <rect
+                  x="85"
+                  y="215"
+                  width="110"
+                  height="105"
+                  rx="8"
+                  className="fill-slate-200/40 dark:fill-slate-700/40 stroke-slate-400 dark:stroke-slate-600"
+                  strokeWidth="1.5"
+                />
 
-            {/* Sol & Sağ Yan Aynalar */}
-            <path d="M 45 165 C 30 165, 30 185, 45 185 Z" className="fill-slate-300 dark:fill-slate-600 stroke-slate-400" />
-            <path d="M 235 165 C 250 165, 250 185, 235 185 Z" className="fill-slate-300 dark:fill-slate-600 stroke-slate-400" />
+                {/* Arka Cam */}
+                <path
+                  d="M 85 325 C 105 328, 175 328, 195 325 L 205 365 C 180 370, 100 370, 75 365 Z"
+                  className="fill-sky-100/70 dark:fill-sky-950/70 stroke-sky-400 dark:stroke-sky-600"
+                  strokeWidth="1.5"
+                />
 
-            {/* Tekerlekler (Wheels) */}
-            <rect x="35" y="80" width="12" height="40" rx="3" className="fill-slate-800 dark:fill-slate-900" />
-            <rect x="233" y="80" width="12" height="40" rx="3" className="fill-slate-800 dark:fill-slate-900" />
-            <rect x="35" y="360" width="12" height="40" rx="3" className="fill-slate-800 dark:fill-slate-900" />
-            <rect x="233" y="360" width="12" height="40" rx="3" className="fill-slate-800 dark:fill-slate-900" />
+                {/* Bagaj Kapağı */}
+                <path
+                  d="M 75 370 C 100 375, 180 375, 205 370 L 200 430 C 180 435, 100 435, 80 430 Z"
+                  className="fill-slate-200/50 dark:fill-slate-700/50 stroke-slate-400 dark:stroke-slate-600"
+                  strokeWidth="1.5"
+                />
+
+                {/* Sol & Sağ Yan Aynalar */}
+                <path d="M 45 165 C 30 165, 30 185, 45 185 Z" className="fill-slate-300 dark:fill-slate-600 stroke-slate-400" />
+                <path d="M 235 165 C 250 165, 250 185, 235 185 Z" className="fill-slate-300 dark:fill-slate-600 stroke-slate-400" />
+
+                {/* Tekerlekler (Wheels) */}
+                <rect x="35" y="80" width="12" height="40" rx="3" className="fill-slate-800 dark:fill-slate-900" />
+                <rect x="233" y="80" width="12" height="40" rx="3" className="fill-slate-800 dark:fill-slate-900" />
+                <rect x="35" y="360" width="12" height="40" rx="3" className="fill-slate-800 dark:fill-slate-900" />
+                <rect x="233" y="360" width="12" height="40" rx="3" className="fill-slate-800 dark:fill-slate-900" />
+              </g>
+            )}
           </svg>
 
           {/* Konumlandırılmış Hasar Pinleri */}

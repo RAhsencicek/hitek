@@ -26,6 +26,34 @@ export interface SectorInspectionItem {
   description: string;
 }
 
+export interface MicromobilityPart {
+  oem: string;
+  name: string;
+  unit: string;
+  category: string;
+  defaultPrice: number;
+}
+
+export const MICROMOBILITY_PARTS_SEED: MicromobilityPart[] = [
+  // --- Motosiklet Parçaları ---
+  { oem: "CAS-10W40-4T", name: "Castrol Power1 10W-40 4T Sentetik Motor Yağı (1L)", unit: "Adet", category: "Yağ & Sıvı", defaultPrice: 380 },
+  { oem: "MOT-7100-10W40", name: "Motul 7100 10W-40 4T Tam Sentetik Motor Yağı (1L)", unit: "Adet", category: "Yağ & Sıvı", defaultPrice: 490 },
+  { oem: "BAN-BELT-PCX", name: "Bando Varyatör Tahrik Kayışı (Honda PCX/Activa Uyumlu)", unit: "Adet", category: "Şanzıman", defaultPrice: 650 },
+  { oem: "DRP-ROLL-15G", name: "Dr.Pulley Varyatör Baga Ağırlık Seti (15 Gr - 6'lı)", unit: "Takım", category: "Şanzıman", defaultPrice: 420 },
+  { oem: "NGK-CPR8EA9", name: "NGK CPR8EA-9 Standart Enjeksiyonlu Scooter Bujisi", unit: "Adet", category: "Ateşleme", defaultPrice: 180 },
+  { oem: "BRN-PAD-FRONT", name: "Brenta Organik Ön Disk Fren Balatası", unit: "Takım", category: "Fren", defaultPrice: 280 },
+  { oem: "YUA-YTX7LBS", name: "Yuasa YTX7L-BS 12V 6Ah Kuru Bakımsız Motosiklet Aküsü", unit: "Adet", category: "Elektrik", defaultPrice: 1250 },
+  { oem: "ANL-WG2-1008014", name: "Anlas Winter Grip 2 Ön Lastik (100/80-14 Kurye Özel)", unit: "Adet", category: "Lastik", defaultPrice: 1450 },
+
+  // --- E-Scooter Parçaları ---
+  { oem: "SCT-SOLID-10X2", name: "10x2.125 inç Delikli Petek Dolgu Patlamaz Dış Lastik", unit: "Adet", category: "Scooter Lastik", defaultPrice: 450 },
+  { oem: "ESC-36V-350W", name: "36V 350W Fırçasız Motor ESC Anakart Devresi", unit: "Adet", category: "Scooter Beyin", defaultPrice: 950 },
+  { oem: "BMS-36V-15AH", name: "36V 15.3Ah Akıllı İletişimli Batarya Koruma Kartı (BMS)", unit: "Adet", category: "Batarya", defaultPrice: 680 },
+  { oem: "DISC-120MM-SCT", name: "120mm Paslanmaz Çelik Fren Diski + Kaliper Seti", unit: "Takım", category: "Scooter Fren", defaultPrice: 380 },
+  { oem: "THROTTLE-HALL", name: "Manyetik Hall Sensörlü Parmak Gaz Kolu Mandalı", unit: "Adet", category: "Scooter Kumanda", defaultPrice: 220 },
+  { oem: "FOLD-HOOK-STEEL", name: "Güçlendirilmiş Çelik Katlama Boyun Mandalı & Kilit Pimi", unit: "Adet", category: "Gövde", defaultPrice: 290 }
+];
+
 export interface SectorConfig {
   id: SectorId;
   name: string;
@@ -323,27 +351,33 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
       helperText: "Kilometre ve batarya şarj döngüsü sayısı",
     },
     intakeTitle: "Hızlı Motosiklet & Scooter Kabulü",
-    intakeSubtitle: "Barkod ve Batarya Bilgisi ile Hızlı Servis Kabulü",
-    inspectionTitle: "Motosiklet / Scooter Güvenlik & Batarya DVI",
+    intakeSubtitle: "Plaka / Şasi ve Batarya Bilgisi ile Hızlı Servis Kabulü",
+    inspectionTitle: "10 Nokta Motosiklet & 8 Nokta E-Scooter Güvenlik DVI",
     inspectionItems: [
-      { id: "batarya", label: "Batarya Sağlığı (SoH) & Hücre Dengesi", description: "Hücre voltaj farkları < 0.05V olmalı" },
-      { id: "fren", label: "Hidrolik / Tel Fren Balataları", description: "Disk kalınlığı ve tel gerginliği" },
-      { id: "lastik", label: "Lastik Diş Derinliği & Jant Eğikliği", description: "Darbe veya balans eğriliği kontrolü" },
-      { id: "elektronik", label: "Elektronik Gaz Kolu & Anakart (ESC)", description: "Tepki süresi ve MOSFET ısı testi" },
+      { id: "fren_on", label: "Ön Fren Manet & Balata", description: "Balata et kalınlığı > 2.0 mm, manet sertliği tam olmalı" },
+      { id: "fren_arka", label: "Arka Fren Teli / Hidrolik", description: "Telde saçaklanma olmamalı, kampana ayarı boşluksuz olmalı" },
+      { id: "lastik_psi", label: "Lastik Basıncı & Diş Derinliği", description: "Ön: 29 PSI, Arka: 33 PSI, diş derinliği > 1.6 mm" },
+      { id: "gidon_masa", label: "Gidon Bilyası & Ön Maşa Keçe", description: "Gidon kilitlenmemeli, amortisör keçelerinde yağ kaçağı olmamalı" },
+      { id: "varyator_kayis", label: "Tahrik Kayışı & Bagalar", description: "Kayışta çatlak olmamalı, bagalarda düzleşme olmamalı" },
+      { id: "aku_sarj", label: "Akü & Şarj Voltajı (13.8V - 14.4V)", description: "Rölantide 12.4V, gaz verince 13.8V-14.4V şarj etmeli" },
+      { id: "buji_atesleme", label: "Buji & Ateşleme", description: "Elektrot aralığı 0.7-0.8 mm, kurum bağlamamış olmalı" },
+      { id: "katlama_pimi", label: "Scooter Katlama Boyun Pimi", description: "Boyunda ve kilit mandalında milimetrik boşluk olmamalı (Hayati Tehlike!)" },
+      { id: "batarya_soh", label: "Batarya SoH (%) & Hücre Dengesi", description: "Hücre grupları arası voltaj farkı ΔV < 0.05V olmalı" },
+      { id: "esc_hall", label: "Gaz Kolu & ESC Anakart", description: "Parmak bırakılınca gaz kolu sıfıra yaylanmalı, E-ABS motoru kesmeli" },
     ],
     complaintPresets: [
-      "Batarya çok çabuk bitiyor, menzil %50 düştü",
-      "Frene basınca mekanik kilitleniyor / ses yapıyor",
-      "E-Scooter ekranda E16 arıza kodu veriyor",
-      "Gidonda sallantı ve boşluk var, direksiyon kilitleniyor",
-      "10.000 KM Motosiklet periyodik varyatör & kayış bakımı",
-      "Gaz koluna basınca tekleme yapıyor",
+      "⚡ 15 Dk Kurye Ekspres Bakımı (Yağ + Buji + Lastik + Fren)",
+      "Varyatörden ses geliyor, kalkışta titriyor ve kayış kaçırıyor",
+      "E-Scooter katlama boynunda boşluk var, gidon sallanıyor",
+      "Batarya çok çabuk bitiyor, menzil %50 düştü (BMS Testi)",
+      "Patlamaz delikli petek dolgu lastik pres montajı",
+      "Ön/arka fren balatası bitti, manet sona dayanıyor",
     ],
     bayStations: [
-      { id: "LIFT-MOTO", name: "Motosiklet Hidrolik Lifti", icon: "Wrench" },
-      { id: "TEZGAH-SCOOTER", name: "E-Scooter Mekanik Tezgahı", icon: "Wrench" },
-      { id: "BMS-LAB", name: "Batarya & BMS Test Laboratuvarı", icon: "Zap" },
-      { id: "TEST-YOLU", name: "Güvenlik & Fren Test Pisti", icon: "CheckCircle2" },
+      { id: "MOTO-LIFT-1", name: "1. Motosiklet Lifti (Periyodik & Ağır)", icon: "Wrench" },
+      { id: "MOTO-LIFT-2", name: "2. Motosiklet Lifti (Kurye Hızlı Yağ & Balata)", icon: "Wrench" },
+      { id: "TEZGAH-SCOOTER", name: "E-Scooter Mekanik Onarım Masası", icon: "Wrench" },
+      { id: "BMS-LAB", name: "Batarya, BMS & Lityum Punta İstasyonu", icon: "Zap" },
     ],
     demoSamples: [
       {
