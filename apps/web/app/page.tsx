@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { ComponentShowcase } from "@/components/showcase/ComponentShowcase";
 import { HiVehicleIntakeForm } from "@/components/intake/HiVehicleIntakeForm";
 import { HiWorkshopKanban } from "@/components/kanban/HiWorkshopKanban";
 import { HiTechBoard } from "@/components/techboard/HiTechBoard";
@@ -18,7 +17,6 @@ import {
   Kanban,
   Barcode,
   ShoppingCart,
-  Palette,
   Printer,
   ShieldAlert
 } from "lucide-react";
@@ -35,7 +33,7 @@ const SECTOR_ICONS: Record<string, React.ElementType> = {
   Wrench,
 };
 
-type ActiveTab = "intake" | "kanban" | "techboard" | "receiving" | "procurement" | "quarantine" | "showcase";
+type ActiveTab = "intake" | "kanban" | "techboard" | "receiving" | "procurement" | "quarantine";
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("intake");
@@ -49,49 +47,36 @@ export default function HomePage() {
       label: config.id === "automotive" ? "Hızlı Araç Kabul" : `Hızlı ${config.assetTypeName} Kabul`,
       shortLabel: "Kabul",
       icon: IntakeIcon,
-      tag: "Modül 1",
     },
     {
       id: "kanban" as const,
       label: config.id === "automotive" ? "Lift & Atölye Kanban" : "İstasyon & Saha Kanban",
       shortLabel: "Kanban",
       icon: Kanban,
-      tag: "Modül 2",
     },
     {
       id: "techboard" as const,
       label: "Teknisyen Paneli",
       shortLabel: "Teknisyen",
       icon: Wrench,
-      tag: "Ekran 2",
     },
     {
       id: "receiving" as const,
-      label: "Konsolide Mal Kabul & Mühür",
+      label: "Konsolide Mal Kabul",
       shortLabel: "Mal Kabul",
       icon: Barcode,
-      tag: "Modül 3",
     },
     {
       id: "procurement" as const,
       label: "Satınalma & Tedarik",
       shortLabel: "Tedarik",
       icon: ShoppingCart,
-      tag: "Modül 3",
     },
     {
       id: "quarantine" as const,
       label: "Karantina & Çakışma Yönetimi",
       shortLabel: "Karantina",
       icon: ShieldAlert,
-      tag: "Faz 3",
-    },
-    {
-      id: "showcase" as const,
-      label: "UI-Kit Vitrini",
-      shortLabel: "Vitrin",
-      icon: Palette,
-      tag: "Faz 0",
     },
   ];
 
@@ -110,9 +95,6 @@ export default function HomePage() {
                 </span>
                 <span className="font-black text-lg tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                   HiServis AI
-                </span>
-                <span className="hidden sm:inline-block text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                  FAZ 3 CANLI
                 </span>
               </div>
 
@@ -159,18 +141,6 @@ export default function HomePage() {
                 >
                   <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-white" : "text-slate-500 dark:text-slate-400")} />
                   <span>{tab.label}</span>
-                  {tab.tag && (
-                    <span
-                      className={cn(
-                        "text-[9px] font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider",
-                        isActive
-                          ? "bg-white/20 text-white"
-                          : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
-                      )}
-                    >
-                      {tab.tag}
-                    </span>
-                  )}
                 </button>
               );
             })}
@@ -200,12 +170,10 @@ export default function HomePage() {
         {activeTab === "procurement" && <HiProcurementPanel />}
 
         {activeTab === "quarantine" && <HiQuarantineConsole />}
-
-        {activeTab === "showcase" && <ComponentShowcase />}
       </main>
 
       {/* Mobil Alt Çubuk (Bottom Navigation Bar) */}
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 flex items-center justify-around py-2 px-1 shadow-lg">
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 flex items-center justify-around py-1 px-1 shadow-lg">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -216,7 +184,7 @@ export default function HomePage() {
               type="button"
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "flex flex-col items-center gap-1 py-1 px-2 rounded-xl text-[11px] font-bold transition-all",
+                "flex-1 min-w-0 flex flex-col items-center gap-0.5 py-1 px-0.5 rounded-xl text-[10px] font-bold transition-all",
                 isActive
                   ? "text-blue-600 dark:text-blue-400 font-extrabold"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900"
@@ -224,13 +192,13 @@ export default function HomePage() {
             >
               <div
                 className={cn(
-                  "p-1.5 rounded-xl transition-all",
+                  "p-1 rounded-lg transition-all",
                   isActive ? "bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400" : "bg-transparent"
                 )}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-4 h-4" />
               </div>
-              <span>{tab.shortLabel}</span>
+              <span className="truncate max-w-full text-center">{tab.shortLabel}</span>
             </button>
           );
         })}

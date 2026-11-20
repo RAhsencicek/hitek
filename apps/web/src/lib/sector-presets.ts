@@ -127,7 +127,7 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
       helperText: "Gösterge paneli güncel kilometre bilgisi",
     },
     intakeTitle: "Hızlı Araç Kabul & İş Emri Girişi",
-    intakeSubtitle: "Hedef Süre: < 30 Saniye • Plaka & Ruhsat OCR Otomasyonu",
+    intakeSubtitle: "Plaka ve Ruhsat Okuma ile Hızlı Araç Kabul & İş Emri",
     inspectionTitle: "2D Kaporta Hasar & Mekanik DVI Muayenesi",
     inspectionItems: [
       { id: "fren", label: "Fren Balata & Diskleri", description: "Ön ve arka balata aşınma kalınlığı" },
@@ -225,7 +225,7 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
       helperText: "Normal çalışma aralığı: 1.2 - 1.8 Bar",
     },
     intakeTitle: "Hızlı Cihaz Kabul & Servis Talebi",
-    intakeSubtitle: "Hedef Süre: < 30 Saniye • Cihaz Barkodu & Model Eşleme",
+    intakeSubtitle: "Cihaz Barkodu ve Model Eşleme ile Hızlı Servis Talebi",
     inspectionTitle: "Kombi / Klima Güvenlik & Verimlilik Muayenesi",
     inspectionItems: [
       { id: "gaz_kacak", label: "Doğalgaz Kaçak Dedektör Testi", description: "Gaz vanası ve rekor kaçak kontrolü" },
@@ -323,7 +323,7 @@ export const SECTOR_PRESETS: Record<SectorId, SectorConfig> = {
       helperText: "Kilometre ve batarya şarj döngüsü sayısı",
     },
     intakeTitle: "Hızlı Motosiklet & Scooter Kabulü",
-    intakeSubtitle: "Hedef Süre: < 30 Saniye • Hızlı Barkod & Batarya Okuma",
+    intakeSubtitle: "Barkod ve Batarya Bilgisi ile Hızlı Servis Kabulü",
     inspectionTitle: "Motosiklet / Scooter Güvenlik & Batarya DVI",
     inspectionItems: [
       { id: "batarya", label: "Batarya Sağlığı (SoH) & Hücre Dengesi", description: "Hücre voltaj farkları < 0.05V olmalı" },

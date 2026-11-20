@@ -147,10 +147,7 @@ export const HiQuarantineConsole: React.FC = () => {
               </span>
               <div>
                 <h1 className="text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                  Karantina Çakışma Yönetimi & Hakemlik Konsolu
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
-                    Faz 3 Canlı
-                  </span>
+                  Karantina Çakışma Yönetimi &amp; Hakemlik Konsolu
                 </h1>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   Bodrum katı / sinyalsiz sahadan gelen çevrimdışı (Drift SQLite) mutasyonlar ile ofis kararları arasındaki çakışmaları inceleyin ve karara bağlayın.

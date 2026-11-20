@@ -67,33 +67,30 @@ export const HiSectorSwitcher: React.FC = () => {
         <span className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
           <CurrentIcon className="w-3.5 h-3.5" />
         </span>
-        <span className="font-extrabold tracking-tight truncate max-w-[120px] sm:max-w-[160px]">
+        <span className="font-extrabold tracking-tight truncate max-w-[150px] sm:max-w-[180px]">
           {config.shortName}
         </span>
         <span className="hidden lg:inline text-slate-300 dark:text-slate-600 font-normal">|</span>
         <span className="hidden lg:inline font-medium text-slate-600 dark:text-slate-400 truncate max-w-[200px]">
           {config.branchDefaultName}
         </span>
-        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-600 text-white shrink-0 shadow-xs">
+        <span className="hidden sm:inline-block text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-600 text-white shrink-0 shadow-xs">
           SEKTÖR DEĞİŞTİR
         </span>
         <ChevronDown className={cn("w-3.5 h-3.5 text-slate-400 transition-transform shrink-0", isOpen && "rotate-180")} />
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-2 z-50 animate-in fade-in zoom-in-95 duration-100">
+        <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-[calc(100vw-2rem)] max-w-sm sm:w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-2 z-50 animate-in fade-in zoom-in-95 duration-100">
           <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center justify-between">
               <span className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                Sektör &amp; İş Alanı Görünümü
-              </span>
-              <span className="text-[10px] font-semibold text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
-                Canlı Demo
+                Sektör Seçimi
               </span>
             </div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-              Tüm formlar, şube adı ve istasyonlar seçilen sektöre anında bürünür.
+              İşletmenizin faaliyet alanını belirleyin.
             </p>
           </div>
 

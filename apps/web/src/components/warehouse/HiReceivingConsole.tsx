@@ -99,9 +99,6 @@ export const HiReceivingConsole: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-black tracking-tight">Konsolide Mal Kabul &amp; Parça Eşleştirme</h1>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30">
-                Faz 2 Modül 3
-              </span>
             </div>
             <p className="text-xs text-slate-400">
               Kutudaki genel EAN barkodunu okutarak açık iş emirlerine tahsis edin ve mühür basın.

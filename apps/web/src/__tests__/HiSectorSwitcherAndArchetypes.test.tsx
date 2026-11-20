@@ -113,6 +113,5 @@ describe("HiSectorSwitcher & Çok Sektörlü Dinamik Şablon Mimarisi", () => {
     expect(screen.getByText("Asansör Periyodik Bakım & Arıza Kaydı")).toBeInTheDocument();
     expect(screen.getByText(/Bakanlık Asansör Kimlik/i)).toBeInTheDocument();
     expect(screen.getByText(/A-Tipi Muayene & Güvenlik DVI Kontrol Listesi/i)).toBeInTheDocument();
-    expect(screen.getByText("AS-10492 (Otis Gen2)")).toBeInTheDocument();
   });
 });

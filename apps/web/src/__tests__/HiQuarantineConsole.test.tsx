@@ -20,7 +20,7 @@ describe("HiQuarantineConsole — Faz 3 Karantina Çakışma Hakemlik Konsolu", 
     expect(
       screen.getByText(/Karantina Çakışma Yönetimi & Hakemlik Konsolu/i)
     ).toBeInTheDocument();
-    expect(screen.getByText(/Faz 3 Canlı/i)).toBeInTheDocument();
+    expect(screen.getByText(/Karantina Çakışma Yönetimi/i)).toBeInTheDocument();
     expect(
       screen.getByText(/Bodrum Katına İn \(Çevrimdışı Simüle Et\)/i)
     ).toBeInTheDocument();

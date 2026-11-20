@@ -13,23 +13,12 @@ describe("HiVehicleIntakeForm — Hızlı Araç Kabul & İş Emri", () => {
     expect(screen.getByText(/KABULÜ TAMAMLA & LİFTE SEVK ET/i)).toBeInTheDocument();
   });
 
-  it("updates fields when demo preset buttons are clicked", () => {
+  it("updates fields when user types plate and info", () => {
     render(<HiVehicleIntakeForm />);
 
-    // Click on Megane demo preset
-    const meganeBtn = screen.getByText("06 BCD 456 (Megane)");
-    fireEvent.click(meganeBtn);
-
-    expect(screen.getByDisplayValue("06 BCD 456")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Renault")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Megane 1.5 Blue dCi Icon")).toBeInTheDocument();
-
-    // Click on New Vehicle preset
-    const newVehicleBtn = screen.getByText("35 CDE 789 (Yeni Araç)");
-    fireEvent.click(newVehicleBtn);
-
-    expect(screen.getByDisplayValue("35 CDE 789")).toBeInTheDocument();
-    expect(screen.getByText("Yeni Araç Kaydı")).toBeInTheDocument();
+    const plateInput = screen.getByPlaceholderText("34 ABC 123");
+    fireEvent.change(plateInput, { target: { value: "34 IST 999" } });
+    expect(plateInput).toHaveValue("34 IST 999");
   });
 
   it("simulates plate camera scanner with < 300ms feedback", async () => {

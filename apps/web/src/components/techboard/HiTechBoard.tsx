@@ -271,7 +271,7 @@ export const HiTechBoard: React.FC = () => {
             </div>
 
             <div className="text-xs text-slate-500 font-medium">
-              (Hedef Süre: {formatTimer(targetSeconds)})
+              (Standart Süre: {formatTimer(targetSeconds)})
             </div>
 
             {/* Sayaç İlerleme Çubuğu */}

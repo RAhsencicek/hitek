@@ -289,8 +289,8 @@ export const HiVehicleIntakeForm: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      {/* Başlık ve Hızlı Eylemler */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Başlık ve Durum */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -301,60 +301,6 @@ export const HiVehicleIntakeForm: React.FC = () => {
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             {config.intakeSubtitle}
           </p>
-        </div>
-
-        {/* Demo Hızlı Şablon Butonları */}
-        <div className="flex flex-wrap items-center gap-1.5 self-start md:self-auto">
-          <span className="text-[11px] font-semibold text-slate-400 mr-1">Demo Şablonlar:</span>
-          {sector === "automotive" ? (
-            <>
-              <button
-                type="button"
-                onClick={() => handleSelectPreset("34 ABC 123")}
-                className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 border border-slate-200 transition-colors"
-              >
-                34 ABC 123 (Passat)
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSelectPreset("06 BCD 456")}
-                className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 border border-slate-200 transition-colors"
-              >
-                06 BCD 456 (Megane)
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSelectPreset("35 CDE 789")}
-                className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition-colors"
-              >
-                35 CDE 789 (Yeni Araç)
-              </button>
-            </>
-          ) : (
-            config.demoSamples.map((sample) => (
-              <button
-                key={sample.id}
-                type="button"
-                onClick={() => {
-                  setPlate(sample.primaryId);
-                  setVin(sample.secondaryId);
-                  setBrand(sample.brand);
-                  setModel(sample.model);
-                  setModelYear(sample.modelYear);
-                  setMeter(sample.meter);
-                  setCustomerName(sample.customerName);
-                  setCustomerPhone(sample.customerPhone);
-                  setComplaint(sample.complaint);
-                  setIsRecognized(true);
-                  setOutstandingBalance(0);
-                  setPastServices([]);
-                }}
-                className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 transition-colors"
-              >
-                {sample.label}
-              </button>
-            ))
-          )}
         </div>
       </div>
 
@@ -893,8 +839,8 @@ export const HiVehicleIntakeForm: React.FC = () => {
             <CheckCircle2 className="w-5 h-5 mr-2" />
             <span>
               {sector === "automotive"
-                ? "KABULÜ TAMAMLA & LİFTE SEVK ET (30s)"
-                : `KABULÜ TAMAMLA & SAHAYA SEVK ET (30s)`}
+                ? "KABULÜ TAMAMLA & LİFTE SEVK ET"
+                : `KABULÜ TAMAMLA & SAHAYA SEVK ET`}
             </span>
           </HiButton56>
         </div>
