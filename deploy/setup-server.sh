@@ -29,7 +29,7 @@ fi
 sudo apt install -y docker-compose-plugin
 
 # 4. Proje Dizinini Hazırlama
-APP_DIR="/opt/hiservis"
+APP_DIR="/var/www/hitek"
 sudo mkdir -p $APP_DIR
 sudo chown -R $USER:$USER $APP_DIR
 
