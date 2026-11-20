@@ -1,0 +1,24 @@
+# Stage 1: Build .NET 10 API
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+# Copy project files and restore
+COPY ["apps/api/src/HiServis.Core/HiServis.Core.csproj", "apps/api/src/HiServis.Core/"]
+COPY ["apps/api/src/HiServis.Infrastructure/HiServis.Infrastructure.csproj", "apps/api/src/HiServis.Infrastructure/"]
+COPY ["apps/api/src/HiServis.Api/HiServis.Api.csproj", "apps/api/src/HiServis.Api/"]
+RUN dotnet restore "apps/api/src/HiServis.Api/HiServis.Api.csproj"
+
+# Copy source and publish
+COPY apps/api/src/ apps/api/src/
+WORKDIR "/src/apps/api/src/HiServis.Api"
+RUN dotnet publish "HiServis.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Stage 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/publish .
+
+ENV ASPNETCORE_URLS=http://+:5254
+EXPOSE 5254
+
+ENTRYPOINT ["dotnet", "HiServis.Api.dll"]
