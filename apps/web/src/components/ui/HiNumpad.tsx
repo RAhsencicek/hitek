@@ -6,9 +6,10 @@ import { Delete, Check } from "lucide-react";
 export interface HiNumpadProps {
   initialValue?: string | number;
   label?: string;
-  unit?: "KM" | "TL" | "NUMERIC";
+  unit?: "KM" | "TL" | "NUMERIC" | string;
   maxDigits?: number;
   onConfirm?: (value: number, formatted: string) => void;
+  onCancel?: () => void;
   className?: string;
 }
 
@@ -23,6 +24,7 @@ export const HiNumpad: React.FC<HiNumpadProps> = ({
   unit = "KM",
   maxDigits = 7,
   onConfirm,
+  onCancel,
   className,
 }) => {
   const [digits, setDigits] = useState<string>(() => {
